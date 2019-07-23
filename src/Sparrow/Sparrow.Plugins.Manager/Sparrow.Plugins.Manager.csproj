@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sparrow.Core\Sparrow.Core.csproj" />
-    <ProjectReference Include="..\Sparrow.Plugins.Identity\Sparrow.Plugins.Identity.csproj" />
   </ItemGroup>
 
 </Project>
