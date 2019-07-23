@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -15,12 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sparrow.Core\Sparrow.Core.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Areas\Identity\Data\" />
-    <Folder Include="Areas\Identity\Models\" />
   </ItemGroup>
 
 </Project>
