@@ -6,7 +6,7 @@ namespace Sparrow.EntityFrameworkCore.Uow
 {
     public static class UowExtensions
     {
-        public static TDbContext GetDbContext<TDbContext>(this IActiveUow uow)
+        public static TDbContext GetDbContext<TDbContext>(this IActiveUow uow, string name = null)
             where TDbContext : DbContext
         {
             if (uow == null)
@@ -19,7 +19,7 @@ namespace Sparrow.EntityFrameworkCore.Uow
                 throw new ArgumentException("unitOfWork is not type of " + typeof(EfCoreUow).FullName, nameof(uow));
             }
 
-            return ((EfCoreUow)uow).GetOrCreateDbContext<TDbContext>();
+            return ((EfCoreUow)uow).GetOrCreateDbContext<TDbContext>(name);
         }
     }
 }

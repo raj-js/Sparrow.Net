@@ -13,6 +13,13 @@ namespace Sparrow.Core.Domain.Uow
         private bool _succeed;
         private Exception _exception;
 
+        protected IConnectionStringResolver ConnectionStringResolver;
+
+        protected UowBase(IConnectionStringResolver connectionStringResolver)
+        {
+            ConnectionStringResolver = connectionStringResolver;
+        }
+
         public string Id { get; set; }
 
         [DoNotWire]
@@ -100,6 +107,11 @@ namespace Sparrow.Core.Domain.Uow
 
             DisposeUow();
             OnDisposed();
+        }
+
+        protected virtual string ResolveConnectionString(ConnectionStringResolveArgs args)
+        {
+            return ConnectionStringResolver.GetNameOrConnectionString(args);
         }
     }
 }

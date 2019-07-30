@@ -13,9 +13,9 @@ namespace Sparrow.EntityFrameworkCore.Uow
             _currentUowProvider = currentUowProvider;
         }
 
-        public TDbContext GetDbContext()
+        public TDbContext GetDbContext(string name = null)
         {
-            return _currentUowProvider.Current.GetDbContext<TDbContext>();
+            return _currentUowProvider.Current.GetDbContext<TDbContext>(name);
         }
     }
 }
