@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Sparrow.Core.Domain.Entities;
+using Sparrow.Core.Domain.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -6,9 +9,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Sparrow.Core.Domain.Entities;
-using Sparrow.Core.Domain.Repositories;
 
 namespace Sparrow.EntityFrameworkCore.Repositories
 {

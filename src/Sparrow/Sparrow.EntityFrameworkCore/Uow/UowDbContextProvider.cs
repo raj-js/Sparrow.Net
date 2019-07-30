@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Sparrow.Core.Domain.Uow;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
     public class UowDbContextProvider<TDbContext> : IDbContextProvider<TDbContext>
         where TDbContext : DbContext
     {
+        private readonly ICurrentUowProvider _currentUowProvider;
 
+        public UowDbContextProvider(ICurrentUowProvider currentUowProvider)
+        {
+            _currentUowProvider = currentUowProvider;
+        }
 
         public TDbContext GetDbContext()
         {
-            throw new NotImplementedException();
+            return _currentUowProvider.Current.GetDbContext<TDbContext>();
         }
     }
 }
