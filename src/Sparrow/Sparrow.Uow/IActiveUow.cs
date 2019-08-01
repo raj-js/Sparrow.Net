@@ -8,10 +8,10 @@ namespace Sparrow.Uow
         event EventHandler OnDisposed;
         event EventHandler<Exception> OnFailed;
 
-        UowOptions Options { get; set; }
+        IUow Outer { get; set; }
+
+        UowOptions Options { get; }
 
         void Begin(UowOptions options);
-
-        void SaveChanges();
     }
 }

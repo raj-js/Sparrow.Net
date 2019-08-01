@@ -10,5 +10,12 @@ namespace Sparrow.Uow
         public TimeSpan? Timeout { get; set; }
 
         public bool IsTranscational { get; set; }
+
+        public UowOptions()
+        {
+            Scope = TransactionScopeOption.Required;
+            Timeout = TimeSpan.FromSeconds(300);
+            IsTranscational = true;
+        }
     }
 }

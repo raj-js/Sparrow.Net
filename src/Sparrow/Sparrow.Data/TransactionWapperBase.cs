@@ -5,7 +5,7 @@ namespace Sparrow.Data
 {
     public abstract class TransactionWapperBase : ITransactionWapper
     {
-        public string Id { get; protected set; }
+        public string Id { get; } 
 
         public virtual IDbTransaction DbTransaction { get; protected set; }
 
@@ -35,14 +35,14 @@ namespace Sparrow.Data
                 {
                     DbTransaction.Commit();
                     IsCommitted = true;
-                    OnSucceed(this, EventArgs.Empty);
+                    OnSucceed?.Invoke(this, EventArgs.Empty);
                 }
             }
             catch (Exception e)
             {
                 IsCommitted = true;
                 Rollback();
-                OnFailed(this, e);
+                OnFailed?.Invoke(this, e);
                 throw;
             }
         }
