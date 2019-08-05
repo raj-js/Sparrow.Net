@@ -1,47 +1,45 @@
-﻿using System;
+﻿using Sparrow.Core.Dependency;
+using Sparrow.Core.Domain.Uow;
 using System.Transactions;
-using Sparrow.Core.Dependency;
 
-namespace Sparrow.Core.Domain.Uow
+namespace Sparrow.Uow
 {
-    internal class UowManager : IUowManager
+    public class UowManager : IUowManager
     {
         private readonly IIocResolver _iocResolver;
         private readonly ICurrentUowProvider _currentUowProvider;
 
-        public IActiveUow Current => _currentUowProvider.Current;
+        public IUow Current => _currentUowProvider.Current;
 
-        public UowManager(
-            IIocResolver iocResolver,
-            ICurrentUowProvider currentUowProvider
-            )
+        public UowManager(IIocResolver iocResolver, ICurrentUowProvider currentUowProvider)
         {
             _iocResolver = iocResolver;
             _currentUowProvider = currentUowProvider;
         }
 
-        public IUowCompleteHandle Begin()
+        public IUowHandle Begin()
         {
-            throw new NotImplementedException();
+            return Begin(new UowOptions());
         }
 
-        public IUowCompleteHandle Begin(TransactionScopeOption scopeOption)
+        public IUowHandle Begin(TransactionScopeOption scope)
         {
-            throw new NotImplementedException();
+            return Begin(new UowOptions { Scope = scope });
         }
 
-        public IUowCompleteHandle Begin(UowArgs args)
+        public IUowHandle Begin(UowOptions options)
         {
-            var outerUow = _currentUowProvider.Current;
+            var outerUow = Current;
 
-            if (args.ScopeOption == TransactionScopeOption.Required && outerUow != null)
-                return new InnerUowCompleteHandle();
+            // 使用范围事务
+            if (outerUow != null && options.Scope == TransactionScopeOption.Required)
+                return new InnerUowHandle();
 
             var uow = _iocResolver.Resolve<IUow>();
 
-            uow.Completed += (s, _) => { _currentUowProvider.Current = null; };
-            uow.Failed += (s, e) => { _currentUowProvider.Current = null; };
-            uow.Disposed += (s, e) => { _iocResolver.Release(uow); };
+            uow.OnCompleted += (_, __) => _currentUowProvider.Current = null;
+            uow.OnFailed += (_, __) => _currentUowProvider.Current = null;
+            uow.OnDisposed += (_, __) => { };
 
             _currentUowProvider.Current = uow;
 

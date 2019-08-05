@@ -9,7 +9,7 @@ namespace Sparrow.Data
 
         public IDbConnection DbConnection { get; protected set; }
 
-        public bool HasTransaction { get; protected set; }
+        public bool HasTransaction { get; set; }
 
         public virtual ITransactionWapper Transaction { get; protected set; }
 

@@ -2,7 +2,7 @@
 using System;
 using System.Configuration;
 
-namespace Sparrow.Core.Domain.Uow
+namespace Sparrow.Core.Data
 {
     public class DefaultConnectionStringResolver : IConnectionStringResolver
     {
@@ -13,7 +13,7 @@ namespace Sparrow.Core.Domain.Uow
             _configuration = configuration;
         }
 
-        public virtual string GetNameOrConnectionString(ConnectionStringResolveArgs args)
+        public virtual string GetConnectionString(ConnectionStringResolveArgs args)
         {
             var defaultConnectionString = _configuration.GetConnectionString("Default");
             if (!string.IsNullOrWhiteSpace(defaultConnectionString))
@@ -23,7 +23,7 @@ namespace Sparrow.Core.Domain.Uow
 
             if (ConfigurationManager.ConnectionStrings["Default"] != null)
             {
-                return "Default";
+                return ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
             }
 
             if (ConfigurationManager.ConnectionStrings.Count == 1)

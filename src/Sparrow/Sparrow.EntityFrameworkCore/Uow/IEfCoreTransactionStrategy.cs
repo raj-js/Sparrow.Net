@@ -1,18 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sparrow.Core.Dependency;
-using Sparrow.Core.Domain.Uow;
+using Sparrow.Uow;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
     public interface IEfCoreTransactionStrategy
     {
-        void InitArgs(UowArgs args);
+        void InitOptions(UowOptions options);
 
-        DbContext CreateDbContext<TDbContext>(string connectionString, IDbContextResolver dbContextResolver)
-            where TDbContext : DbContext;
+        DbContext CreateDbContext<TDbContext>(string connectionString) where TDbContext : DbContext;
 
         void Commit();
 
-        void Dispose(IIocResolver iocResolver);
+        void Dispose();
     }
 }

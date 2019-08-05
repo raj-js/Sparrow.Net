@@ -1,30 +1,33 @@
-﻿using System;
+﻿using Sparrow.Core.Data;
+using System;
 using System.Collections.Generic;
 
 namespace Sparrow.Data
 {
-    public abstract class SparrowContextBase : ISparrowContext
+    public class SparrowContext : ISparrowContext
     {
+        private readonly IConnectionFactory _factory;
+
         protected Dictionary<string, IConnectionWapper> Connections;
 
-        public SparrowContextBase()
+        public SparrowContext(IConnectionFactory factory)
         {
             Connections = new Dictionary<string, IConnectionWapper>();
+            _factory = factory;
         }
-
-        protected abstract IConnectionWapper CreateConnection(string connectionString);
 
         public virtual IConnectionWapper GetOrCreate(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentNullException(nameof(connectionString));
 
-            if (!Connections.TryGetValue(connectionString, out var connection))
+            if (!Connections.TryGetValue(connectionString, out var wapper))
             {
-                connection = CreateConnection(connectionString);
+                wapper = _factory.CreateConnection(connectionString);
+                Connections.Add(connectionString, wapper);
             }
 
-            return connection;
+            return wapper;
         }
 
         public virtual void Commit()

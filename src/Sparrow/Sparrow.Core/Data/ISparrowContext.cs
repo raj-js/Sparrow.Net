@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Sparrow.Data
 {
@@ -11,6 +10,8 @@ namespace Sparrow.Data
     public interface ISparrowContext : IDisposable
     {
         IConnectionWapper GetOrCreate(string connectionString);
+
+        ITransactionWapper BeginTransaction(IConnectionWapper connectionWapper);
 
         void Commit();
 

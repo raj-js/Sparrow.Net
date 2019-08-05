@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
-    public class ActiveTransactionInfo
+    class ActiveTransactionInfo
     {
         public IDbContextTransaction DbContextTransaction { get; }
 
@@ -12,7 +12,8 @@ namespace Sparrow.EntityFrameworkCore.Uow
 
         public List<DbContext> AttendedDbContexts { get; }
 
-        public ActiveTransactionInfo(IDbContextTransaction dbContextTransaction, DbContext starterDbContext)
+        public ActiveTransactionInfo(IDbContextTransaction dbContextTransaction, 
+            DbContext starterDbContext)
         {
             DbContextTransaction = dbContextTransaction;
             StarterDbContext = starterDbContext;

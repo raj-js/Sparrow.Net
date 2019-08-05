@@ -5,7 +5,7 @@ namespace Sparrow.Data
 {
     public interface IConnectionWapper : IDisposable
     {
-        bool HasTransaction { get; }
+        bool HasTransaction { get; set; }
 
         IDbConnection DbConnection { get; }
 

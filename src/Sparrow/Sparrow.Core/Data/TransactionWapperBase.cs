@@ -3,11 +3,11 @@ using System.Data;
 
 namespace Sparrow.Data
 {
-    public abstract class TransactionWapperBase : ITransactionWapper
+    public class TransactionWapper : ITransactionWapper
     {
         public string Id { get; } 
 
-        public virtual IDbTransaction DbTransaction { get; protected set; }
+        public virtual IDbTransaction DbTransaction { get; set; }
 
         public virtual TransactionOptions Options { get; protected set; }
 
@@ -18,7 +18,7 @@ namespace Sparrow.Data
         public event EventHandler OnSucceed;
         public event EventHandler<Exception> OnFailed;
 
-        public TransactionWapperBase(TransactionOptions options)
+        public TransactionWapper(TransactionOptions options)
         {
             Options = options;
 

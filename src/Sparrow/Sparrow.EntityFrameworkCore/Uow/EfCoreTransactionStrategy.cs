@@ -1,66 +1,62 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Sparrow.Core.Dependency;
-using Sparrow.Core.Domain.Uow;
-using Sparrow.Core.Transactions.Extensions;
+using Sparrow.Uow;
 using System.Collections.Generic;
-using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
-    public class EfCoreTransactionStrategy: IEfCoreTransactionStrategy
+    public class EfCoreTransactionStrategy : IEfCoreTransactionStrategy
     {
-        protected UowArgs Args { get; private set; }
-        protected IDictionary<string, ActiveTransactionInfo> ActiveTransactions { get; }
+        private UowOptions _options;
+        private readonly IDictionary<string, ActiveTransactionInfo> _activeTransactions;
+        private readonly IIocResolver _iocResolver;
+        private readonly IDbContextResolver _dbContextResolver;
 
-        public EfCoreTransactionStrategy()
+        public EfCoreTransactionStrategy(IIocResolver iocResolver, IDbContextResolver dbContextResolver)
         {
-            ActiveTransactions = new Dictionary<string, ActiveTransactionInfo>();
+            _activeTransactions = new Dictionary<string, ActiveTransactionInfo>();
+
+            _iocResolver = iocResolver;
+            _dbContextResolver = dbContextResolver;
         }
 
-        public void InitArgs(UowArgs args)
+        public void InitOptions(UowOptions options)
         {
-            Args = args;
+            _options = options;
         }
 
-        public DbContext CreateDbContext<TDbContext>(string connectionString, IDbContextResolver dbContextResolver) where TDbContext : DbContext
+        public DbContext CreateDbContext<TDbContext>(string connectionString) where TDbContext : DbContext
         {
             DbContext dbContext;
 
-            ActiveTransactions.TryGetValue(connectionString, out var activeTransaction);
-            if (activeTransaction == null)
+            if (!_activeTransactions.TryGetValue(connectionString, out var transactionInfo))
             {
-                dbContext = dbContextResolver.Resolve<TDbContext>(connectionString, null);
-
-                var dbTransaction = dbContext.Database.BeginTransaction((Args.IsolationLevel ?? IsolationLevel.ReadUncommitted).ToSystemDataIsolationLevel());
-                activeTransaction = new ActiveTransactionInfo(dbTransaction, dbContext);
-                ActiveTransactions[connectionString] = activeTransaction;
+                dbContext = _dbContextResolver.Resolve<TDbContext>(connectionString, null);
+                var transaction = dbContext.Database.BeginTransaction();
+                transactionInfo = new ActiveTransactionInfo(transaction, dbContext);
+                _activeTransactions[connectionString] = transactionInfo;
             }
             else
             {
-                dbContext = dbContextResolver.Resolve<TDbContext>(
+                dbContext = _dbContextResolver.Resolve<TDbContext>(
                     connectionString,
-                    activeTransaction.DbContextTransaction.GetDbTransaction().Connection
+                    transactionInfo.DbContextTransaction.GetDbTransaction().Connection
                 );
 
                 if (dbContext.HasRelationalTransactionManager())
-                {
-                    dbContext.Database.UseTransaction(activeTransaction.DbContextTransaction.GetDbTransaction());
-                }
+                    dbContext.Database.UseTransaction(transactionInfo.DbContextTransaction.GetDbTransaction());
                 else
-                {
                     dbContext.Database.BeginTransaction();
-                }
 
-                activeTransaction.AttendedDbContexts.Add(dbContext);
+                transactionInfo.AttendedDbContexts.Add(dbContext);
             }
-
             return dbContext;
         }
 
         public void Commit()
         {
-            foreach (var activeTransaction in ActiveTransactions.Values)
+            foreach (var activeTransaction in _activeTransactions.Values)
             {
                 activeTransaction.DbContextTransaction.Commit();
 
@@ -76,21 +72,21 @@ namespace Sparrow.EntityFrameworkCore.Uow
             }
         }
 
-        public void Dispose(IIocResolver iocResolver)
+        public void Dispose()
         {
-            foreach (var activeTransaction in ActiveTransactions.Values)
+            foreach (var activeTransaction in _activeTransactions.Values)
             {
                 activeTransaction.DbContextTransaction.Dispose();
 
                 foreach (var attendedDbContext in activeTransaction.AttendedDbContexts)
                 {
-                    iocResolver.Release(attendedDbContext);
+                    _iocResolver.Release(attendedDbContext);
                 }
 
-                iocResolver.Release(activeTransaction.StarterDbContext);
+                _iocResolver.Release(activeTransaction.StarterDbContext);
             }
 
-            ActiveTransactions.Clear();
+            _activeTransactions.Clear();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Sparrow.Data
         event EventHandler OnSucceed;
         event EventHandler<Exception> OnFailed;
 
-        IDbTransaction DbTransaction { get; }
+        IDbTransaction DbTransaction { get; set; }
 
         TransactionOptions Options { get; }
 

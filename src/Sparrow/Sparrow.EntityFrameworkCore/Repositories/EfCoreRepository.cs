@@ -49,21 +49,6 @@ namespace Sparrow.EntityFrameworkCore.Repositories
         public TDbContext Context => _dbContextProvider.GetDbContext();
         public DbSet<TEntity> Table => Context.Set<TEntity>();
 
-        public virtual DbConnection Connection
-        {
-            get
-            {
-                var connection = Context.Database.GetDbConnection();
-
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
-                return connection;
-            }
-        }
-
         public EfCoreRepository(IDbContextProvider<TDbContext> dbContextProvider)
         {
             _dbContextProvider = dbContextProvider;

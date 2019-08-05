@@ -1,6 +1,6 @@
 ﻿namespace Sparrow.Data
 {
-    public sealed class NullTransactionWapper : TransactionWapperBase
+    public sealed class NullTransactionWapper : TransactionWapper
     {
         public NullTransactionWapper() :
             base(TransactionOptions.NoTransaction)

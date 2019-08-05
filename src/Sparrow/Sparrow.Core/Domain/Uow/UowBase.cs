@@ -1,72 +1,39 @@
-﻿using Castle.Core;
+﻿using Sparrow.Core.Data;
 using System;
 
-namespace Sparrow.Core.Domain.Uow
+namespace Sparrow.Uow
 {
-    /// <summary>
-    /// 工作单元基类
-    /// </summary>
     public abstract class UowBase : IUow
     {
-        private bool _isCompleteCalledBefore;
+        public string Id { get; }
+        public UowOptions Options { get; protected set; }
+        public bool IsDisposed { get; protected set; }
+        public IUow Outer { get; set; }
+
+        public event EventHandler OnCompleted;
+        public event EventHandler OnDisposed;
+        public event EventHandler<Exception> OnFailed;
+
         private bool _isBeginCalledBefore;
-        private bool _succeed;
-        private Exception _exception;
+        private bool _isCompleteCalledBefore;
 
         protected IConnectionStringResolver ConnectionStringResolver;
 
-        protected UowBase(IConnectionStringResolver connectionStringResolver)
+        public UowBase(IConnectionStringResolver connectionStringResolver)
         {
+            Id = Guid.NewGuid().ToString("N");
+
             ConnectionStringResolver = connectionStringResolver;
         }
 
-        public string Id { get; set; }
-
-        [DoNotWire]
-        public IUow Outer { get; set; }
-
-        public event EventHandler Completed;
-        public event EventHandler<Exception> Failed;
-        public event EventHandler Disposed;
-
-        public UowArgs Args { get; set; }
-
-        public bool IsDisposed { get; set; }
-
-        public abstract void SaveChanges();
-
-        protected virtual void BeginUow()
+        public void Begin(UowOptions options)
         {
+            Options = options;
 
-        }
-
-        protected abstract void CompleteUow();
-
-        protected abstract void DisposeUow();
-
-        protected virtual void OnCompleted()
-        {
-            Completed?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnFailed(Exception e)
-        {
-            Failed?.Invoke(this, e);
-        }
-
-        protected virtual void OnDisposed()
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void Begin(UowArgs args)
-        {
             if (_isBeginCalledBefore)
-                throw new Exception("已经调用过 Begin 方法");
+                throw new Exception("不可以多次调用 Begin 方法");
 
             _isBeginCalledBefore = true;
-
-            Args = args;
 
             BeginUow();
         }
@@ -74,44 +41,43 @@ namespace Sparrow.Core.Domain.Uow
         public void Complete()
         {
             if (_isCompleteCalledBefore)
-                throw new Exception("已经调用过 Complete 方法");
+                throw new Exception("不可以多次调用 Begin 方法");
 
             _isCompleteCalledBefore = true;
 
             try
             {
                 CompleteUow();
-                _succeed = true;
-                OnCompleted();
+                OnCompleted?.Invoke(this, EventArgs.Empty);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _exception = ex;
+                OnFailed?.Invoke(this, e);
                 throw;
             }
         }
 
         public void Dispose()
         {
-            if (!_isBeginCalledBefore || IsDisposed)
-            {
-                return;
-            }
+            DisposeUow();
 
             IsDisposed = true;
-
-            if (!_succeed)
-            {
-                OnFailed(_exception);
-            }
-
-            DisposeUow();
-            OnDisposed();
         }
 
-        protected virtual string ResolveConnectionString(ConnectionStringResolveArgs args)
+        protected abstract void BeginUow();
+
+        protected abstract void CompleteUow();
+
+        protected abstract void DisposeUow();
+
+        protected string ResolveConnectionString()
         {
-            return ConnectionStringResolver.GetNameOrConnectionString(args);
+            return ConnectionStringResolver.GetConnectionString(new ConnectionStringResolveArgs());
+        }
+
+        protected string ResolveConnectionString(ConnectionStringResolveArgs args)
+        {
+            return ConnectionStringResolver.GetConnectionString(args);
         }
     }
 }

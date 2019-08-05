@@ -1,127 +1,78 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sparrow.Core.Data;
 using Sparrow.Core.Dependency;
-using Sparrow.Core.Domain.Uow;
-using System;
+using Sparrow.Uow;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
     public class EfCoreUow : UowBase
     {
+        private IDictionary<string, DbContext> _activeDbContexts;
+        private IIocResolver _iocResolver;
         private readonly IDbContextResolver _dbContextResolver;
-        private readonly IDbContextTypeMatcher _dbContextTypeMatcher;
-        private readonly IEfCoreTransactionStrategy _transactionStrategy;
+        private readonly IEfCoreTransactionStrategy _efCoreTransactionStrategy;
 
-        protected IDictionary<string, DbContext> ActiveDbContexts { get; }
-        protected IIocResolver IocResolver { get; }
-
-        public EfCoreUow(
-            IIocResolver iocResolver,
+        public EfCoreUow(IIocResolver iocResolver,
+            IConnectionStringResolver connectionStringResolver,
             IDbContextResolver dbContextResolver,
-            IEfCoreTransactionStrategy transactionStrategy,
-            IConnectionStringResolver connectionStringResolver, 
-            IDbContextTypeMatcher dbContextTypeMatcher)
+            IEfCoreTransactionStrategy efCoreTransactionStrategy)
             : base(connectionStringResolver)
         {
-            IocResolver = iocResolver;
+            _iocResolver = iocResolver;
             _dbContextResolver = dbContextResolver;
-            _transactionStrategy = transactionStrategy;
-            _dbContextTypeMatcher = dbContextTypeMatcher;
-            ActiveDbContexts = new Dictionary<string, DbContext>();
+            _efCoreTransactionStrategy = efCoreTransactionStrategy;
+
+            _activeDbContexts = new Dictionary<string, DbContext>();
         }
 
         protected override void BeginUow()
         {
-            if (Args.IsTransactional == true)
-            {
-                _transactionStrategy.InitArgs(Args);
-            }
-        }
-
-        public override void SaveChanges()
-        {
-            foreach (var dbContext in GetAllActiveDbContexts())
-            {
-                dbContext.SaveChanges();
-            }
+            if (Options.IsTransactional)
+                _efCoreTransactionStrategy.InitOptions(Options);
         }
 
         protected override void CompleteUow()
         {
-            SaveChanges();
-            CommitTransaction();
+            foreach (var context in _activeDbContexts.Values)
+            {
+                context.SaveChanges();
+            }
+
+            if (Options.IsTransactional)
+                _efCoreTransactionStrategy.Commit();
         }
 
         protected override void DisposeUow()
         {
-            if (Args.IsTransactional == true)
-            {
-                _transactionStrategy.Dispose(IocResolver);
-            }
+            if (Options.IsTransactional)
+                _efCoreTransactionStrategy.Dispose();
             else
             {
-                foreach (var context in GetAllActiveDbContexts())
+                foreach (var context in _activeDbContexts.Values)
                 {
-                    Release(context);
+                    context.Dispose();
+                    _iocResolver.Release(context);
                 }
             }
-
-            ActiveDbContexts.Clear();
+           _activeDbContexts.Clear();
         }
 
-        protected virtual void Release(DbContext dbContext)
+        public TDbContext GetDbContext<TDbContext>() where TDbContext : DbContext
         {
-            dbContext.Dispose();
-            IocResolver.Release(dbContext);
-        }
+            var connectionString = ResolveConnectionString();
+            var dbContextKey = $"{typeof(TDbContext).FullName}#{connectionString}";
 
-        public virtual TDbContext GetOrCreateDbContext<TDbContext>(string name = null)
-            where TDbContext : DbContext
-        {
-            var concreteDbContextType = _dbContextTypeMatcher.GetConcreteType(typeof(TDbContext));
-
-            var connectionStringResolveArgs = new ConnectionStringResolveArgs
+            if (!_activeDbContexts.TryGetValue(dbContextKey, out var dbContext))
             {
-                ["DbContextType"] = typeof(TDbContext),
-                ["DbContextConcreteType"] = concreteDbContextType
-            };
-            var connectionString = ResolveConnectionString(connectionStringResolveArgs);
+                if (Options.IsTransactional)
+                    dbContext = _efCoreTransactionStrategy.CreateDbContext<TDbContext>(connectionString);
+                else
+                    dbContext = _dbContextResolver.Resolve<TDbContext>(connectionString, null);
 
-            var dbContextKey = concreteDbContextType.FullName + "#" + connectionString;
-            if (name != null)
-            {
-                dbContextKey += "#" + name;
+                _activeDbContexts.Add(dbContextKey, dbContext);
             }
-
-            if (ActiveDbContexts.TryGetValue(dbContextKey, out var dbContext)) return (TDbContext) dbContext;
-
-            dbContext = Args.IsTransactional == true ? 
-                _transactionStrategy.CreateDbContext<TDbContext>(connectionString, _dbContextResolver) : 
-                _dbContextResolver.Resolve<TDbContext>(connectionString, null);
-
-            if (Args.Timeout.HasValue &&
-                dbContext.Database.IsRelational() &&
-                !dbContext.Database.GetCommandTimeout().HasValue)
-            {
-                dbContext.Database.SetCommandTimeout(Convert.ToInt32(Args.Timeout.Value.TotalSeconds));
-            }
-            ActiveDbContexts[dbContextKey] = dbContext;
-
-            return (TDbContext)dbContext;
-        }
-
-        public IReadOnlyList<DbContext> GetAllActiveDbContexts()
-        {
-            return ActiveDbContexts.Values.ToImmutableList();
-        }
-
-        private void CommitTransaction()
-        {
-            if (Args.IsTransactional == true)
-            {
-                _transactionStrategy.Commit();
-            }
+            return (TDbContext) dbContext;
         }
     }
 }

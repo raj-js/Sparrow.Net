@@ -2,9 +2,8 @@
 
 namespace Sparrow.EntityFrameworkCore
 {
-    public interface IDbContextProvider<out TDbContext>
-        where TDbContext : DbContext
+    public interface IDbContextProvider<TDbContext> where TDbContext : DbContext
     {
-        TDbContext GetDbContext(string name = null);
+        TDbContext GetDbContext();
     }
 }
