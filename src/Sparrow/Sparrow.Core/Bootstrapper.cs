@@ -1,4 +1,5 @@
-﻿using Sparrow.Core.Dependency;
+﻿using Castle.MicroKernel.Registration;
+using Sparrow.Core.Dependency;
 using System;
 
 namespace Sparrow.Core
@@ -17,7 +18,16 @@ namespace Sparrow.Core
             IocManager = Options.IocManager;
         }
 
-        public void Dispose()
+        public virtual void Initialize()
+        {
+            if (!IocManager.IsRegistered<Bootstrapper>())
+                IocManager.IocContainer.Register(Component.For<Bootstrapper>().Instance(this));
+
+            IocManager.AddConventionalRegistrar(new BasicConventionalRegistrar());
+            IocManager.Register<IScopedIocResolver, ScopedIocResolver>(DependencyLifeStyle.Transient);
+        }
+
+        public virtual void Dispose()
         {
             IocManager.Dispose();
         }

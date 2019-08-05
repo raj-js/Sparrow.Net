@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Sparrow.Core.Dependency;
 using System;
 using System.Configuration;
 
 namespace Sparrow.Core.Data
 {
-    public class DefaultConnectionStringResolver : IConnectionStringResolver
+    public class DefaultConnectionStringResolver : IConnectionStringResolver, ITransientDependency
     {
         private readonly IConfiguration _configuration;
 
