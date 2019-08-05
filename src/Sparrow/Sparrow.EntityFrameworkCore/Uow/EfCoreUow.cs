@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
-    public class EfCoreUow : UowBase
+    public class EfCoreUow : UowBase, ITransientDependency
     {
         private IDictionary<string, DbContext> _activeDbContexts;
         private IIocResolver _iocResolver;

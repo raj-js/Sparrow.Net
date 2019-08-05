@@ -5,7 +5,7 @@ using System.Data;
 
 namespace Sparrow.EntityFrameworkCore
 {
-    public class DbContextResolver : IDbContextResolver
+    public class DbContextResolver : IDbContextResolver, ITransientDependency
     {
         private readonly IIocResolver _iocResolver;
 

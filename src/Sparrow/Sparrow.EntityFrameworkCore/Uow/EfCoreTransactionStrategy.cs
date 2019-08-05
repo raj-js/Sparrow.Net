@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
-    public class EfCoreTransactionStrategy : IEfCoreTransactionStrategy
+    public class EfCoreTransactionStrategy : IEfCoreTransactionStrategy, ITransientDependency
     {
         private UowOptions _options;
         private readonly IDictionary<string, ActiveTransactionInfo> _activeTransactions;

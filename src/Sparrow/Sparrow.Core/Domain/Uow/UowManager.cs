@@ -4,7 +4,7 @@ using System.Transactions;
 
 namespace Sparrow.Uow
 {
-    public class UowManager : IUowManager
+    public class UowManager : IUowManager, ITransientDependency
     {
         private readonly IIocResolver _iocResolver;
         private readonly ICurrentUowProvider _currentUowProvider;

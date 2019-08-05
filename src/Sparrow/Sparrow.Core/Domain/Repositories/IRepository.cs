@@ -1,9 +1,11 @@
-﻿namespace Sparrow.Core.Domain.Repositories
+﻿using Sparrow.Core.Dependency;
+
+namespace Sparrow.Core.Domain.Repositories
 {
     /// <summary>
     /// 仓储
     /// </summary>
-    public interface IRepository
+    public interface IRepository : ITransientDependency
     {
 
     }
