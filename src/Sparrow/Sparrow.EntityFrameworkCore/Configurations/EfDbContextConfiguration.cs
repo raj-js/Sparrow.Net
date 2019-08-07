@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Data;
+﻿using System.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace Sparrow.EntityFrameworkCore
+namespace Sparrow.EntityFrameworkCore.Configurations
 {
     public class EfDbContextConfiguration<TDbContext> where TDbContext : DbContext
     {

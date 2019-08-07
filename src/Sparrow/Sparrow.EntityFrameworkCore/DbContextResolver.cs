@@ -2,6 +2,7 @@
 using Sparrow.Core.Dependency;
 using System;
 using System.Data;
+using Sparrow.EntityFrameworkCore.Configurations;
 
 namespace Sparrow.EntityFrameworkCore
 {

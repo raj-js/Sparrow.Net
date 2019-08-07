@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 
-namespace Sparrow.EntityFrameworkCore
+namespace Sparrow.EntityFrameworkCore.Configurations
 {
     public class EfDbContextConfigurator<TDbContext> : IEfDbContextConfigurator<TDbContext>
         where TDbContext : DbContext
     {
-        private Action<EfDbContextConfiguration<TDbContext>> _action;
+        private readonly Action<EfDbContextConfiguration<TDbContext>> _action;
 
         public EfDbContextConfigurator(Action<EfDbContextConfiguration<TDbContext>> action)
         {

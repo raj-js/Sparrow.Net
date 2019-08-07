@@ -1,6 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Sparrow.Core.Dependency;
-using Sparrow.EntityFrameworkCore.Uow;
+using Sparrow.EntityFrameworkCore.Configurations;
 
 namespace Sparrow.EntityFrameworkCore
 {
@@ -8,7 +8,9 @@ namespace Sparrow.EntityFrameworkCore
     {
         public static void AddEfCoreDependencies(this IIocManager iocManager)
         {
-            iocManager.RegisterAssemblyByConvention(typeof(EfCoreUow).Assembly);
+            iocManager.Register<IEfCoreConfiguration, EfCoreConfiguration>();
+
+            iocManager.RegisterAssemblyByConvention(typeof(SparrowEfCoreExtensions).Assembly);
 
             iocManager.IocContainer.Register(
                 Component.For(typeof(IDbContextProvider<>))

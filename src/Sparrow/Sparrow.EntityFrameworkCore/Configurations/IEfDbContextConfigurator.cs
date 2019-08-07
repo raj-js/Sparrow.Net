@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Sparrow.EntityFrameworkCore
+namespace Sparrow.EntityFrameworkCore.Configurations
 {
     public interface IEfDbContextConfigurator<TDbContext> where TDbContext : DbContext
     {
