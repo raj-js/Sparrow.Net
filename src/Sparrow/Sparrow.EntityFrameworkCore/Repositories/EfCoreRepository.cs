@@ -18,8 +18,9 @@ namespace Sparrow.EntityFrameworkCore.Repositories
     /// <typeparam name="TDbContext">DbContext 类型</typeparam>
     /// <typeparam name="TEntity">实体类型， 唯一标识类型为 int</typeparam>
     public class EfCoreRepository<TDbContext, TEntity> :
-        EfCoreRepository<TDbContext, TEntity, int>
-
+        EfCoreRepository<TDbContext, TEntity, int>, 
+        IRepository<TEntity> 
+        
         where TDbContext : DbContext
         where TEntity : class, IEntity
     {

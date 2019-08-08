@@ -11,6 +11,8 @@ namespace Sparrow.AspNetCore.Tests.Data.Models
 
         public DateTime PostTime { get; set; }
 
+        public string BlogId { get; set; }
+
         public virtual Blog Blog { get; set; }
     }
 }

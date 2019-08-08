@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Sparrow.Core.Dependency;
-using Sparrow.Core.Domain.Repositories;
 using Sparrow.EntityFrameworkCore.Configurations;
 using Sparrow.EntityFrameworkCore.Repositories;
-using Sparrow.EntityFrameworkCore.Uow;
+using System.Linq;
+using System.Reflection;
 
 namespace Sparrow.EntityFrameworkCore
 {

@@ -36,11 +36,11 @@ namespace Sparrow.Core.Domain.Uow
 
             if (invocation.Method.IsAsync())
             {
-                PerformAsyncUow(invocation, _uowOptions);
+                PerformAsyncUow(invocation, uowAttr.CreateOptions());
             }
             else
             {
-                PerformSyncUow(invocation, _uowOptions);
+                PerformSyncUow(invocation, uowAttr.CreateOptions());
             }
         }
 
@@ -56,7 +56,6 @@ namespace Sparrow.Core.Domain.Uow
         private void PerformAsyncUow(IInvocation invocation, UowOptions options)
         {
             var uow = _uowManager.Begin(options);
-
             try
             {
                 invocation.Proceed();
