@@ -140,10 +140,10 @@ namespace Sparrow.Core.Domain.Uow
         {
             return new UowOptions
             {
-                IsTransactional = IsTransactional ?? false,
-                IsolationLevel = IsolationLevel,
-                Timeout = Timeout,
-                Scope = Scope
+                IsTransactional = IsTransactional ?? true,
+                IsolationLevel = IsolationLevel ?? System.Transactions.IsolationLevel.ReadCommitted,
+                Timeout = Timeout ?? TimeSpan.FromSeconds(300),
+                Scope = Scope ?? TransactionScopeOption.Required
             };
         }
     }

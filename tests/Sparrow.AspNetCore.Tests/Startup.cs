@@ -28,7 +28,7 @@ namespace Sparrow.AspNetCore.Tests
 
             services.AddDbContext<BlogDbContext>(options =>
             {
-                options.UseSqlServer(connectionString, 
+                options.UseSqlServer(connectionString,
                     setup => setup.MigrationsAssembly(assembly.FullName));
             });
 

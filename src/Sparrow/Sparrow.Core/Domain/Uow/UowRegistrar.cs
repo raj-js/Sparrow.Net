@@ -15,7 +15,7 @@ namespace Sparrow.Core.Domain.Uow
                 var implementationType = handler.ComponentModel.Implementation.GetTypeInfo();
 
                 HandleTypesWithUowAttribute(implementationType, handler);
-                HandleConventionalUowTypes(implementationType, handler);
+                HandleConventionalUowTypes(iocManager, implementationType, handler);
             };
         }
 
@@ -27,9 +27,11 @@ namespace Sparrow.Core.Domain.Uow
             }
         }
 
-        private static void HandleConventionalUowTypes(TypeInfo implementationType, IHandler handler)
+        private static void HandleConventionalUowTypes(IIocManager iocManager, TypeInfo implementationType, IHandler handler)
         {
-            if (UowOptions.Default.IsConventionalUowClass(implementationType.AsType()))
+            var options = iocManager.Resolve<UowOptions>();
+
+            if (options.IsConventionalUowClass(implementationType.AsType()))
             {
                 handler.ComponentModel.Interceptors.Add(new InterceptorReference(typeof(UowInterceptor)));
             }

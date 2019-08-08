@@ -12,9 +12,13 @@ namespace Sparrow.Core
 
         public BootstrapperOptions Options  { get; }
 
-        public Bootstrapper(Action<BootstrapperOptions> actionOptions = null)
+        public Bootstrapper(
+            Action<IIocManager, BootstrapperOptions> preInitialize = null, 
+            Action<BootstrapperOptions> initialize = null
+            )
         {
             Options = new BootstrapperOptions();
+
             IocManager = Options.IocManager;
 
             IocManager.AddConventionalRegistrar(new BasicConventionalRegistrar());
@@ -23,15 +27,24 @@ namespace Sparrow.Core
 
             IocManager.Register<IScopedIocResolver, ScopedIocResolver>(DependencyLifeStyle.Transient);
 
+            IocManager.IocContainer.Register(
+                Component.For<UowOptions>()
+                    .Instance(Options.UowOptions)
+                    .LifeStyle.Singleton
+                );
+
+            IocManager.IocContainer.Register(Component.For<Bootstrapper>().Instance(this));
+
+            preInitialize?.Invoke(IocManager, Options);
+
             UowRegistrar.Initialize(IocManager);
 
-            actionOptions?.Invoke(Options);
+            initialize?.Invoke(Options);
         }
 
         public virtual void Initialize()
         {
-            if (!IocManager.IsRegistered<Bootstrapper>())
-                IocManager.IocContainer.Register(Component.For<Bootstrapper>().Instance(this));
+            
         }
 
         public virtual void Dispose()

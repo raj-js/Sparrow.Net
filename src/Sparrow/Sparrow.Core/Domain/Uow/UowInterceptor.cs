@@ -1,18 +1,19 @@
-﻿using System.Reflection;
-using System.Threading.Tasks;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Sparrow.Core.Threading;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Sparrow.Core.Domain.Uow
 {
     internal class UowInterceptor : IInterceptor
     {
         private readonly IUowManager _uowManager;
-        private readonly UowOptions _uowOptions = UowOptions.Default;
+        private readonly UowOptions _uowUowOptions;
 
-        public UowInterceptor(IUowManager uowManager)
+        public UowInterceptor(IUowManager uowManager, UowOptions uowOptions)
         {
             _uowManager = uowManager;
+            _uowUowOptions = uowOptions;
         }
 
         public void Intercept(IInvocation invocation)
@@ -27,7 +28,7 @@ namespace Sparrow.Core.Domain.Uow
                 method = invocation.GetConcreteMethod();
             }
 
-            var uowAttr = _uowOptions.GetUnitOfWorkAttributeOrNull(method);
+            var uowAttr = _uowUowOptions.GetUnitOfWorkAttributeOrNull(method);
             if (uowAttr == null || uowAttr.IsDisabled)
             {
                 invocation.Proceed();

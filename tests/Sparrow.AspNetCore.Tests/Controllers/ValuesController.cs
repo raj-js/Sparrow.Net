@@ -14,16 +14,18 @@ namespace Sparrow.AspNetCore.Tests.Controllers
         private readonly IUowManager _uowManager;
         private readonly IRepository<Blog, string> _blogResp;
         private readonly IRepository<Post> _postResp;
+        private readonly ICurrentUowProvider _currentUowProvider;
 
-        public ValuesController(IRepository<Blog, string> blogResp, IUowManager uowManager, IRepository<Post> postResp)
+        public ValuesController(IRepository<Blog, string> blogResp, IUowManager uowManager, IRepository<Post> postResp, ICurrentUowProvider currentUowProvider)
         {
             _blogResp = blogResp;
             _uowManager = uowManager;
             _postResp = postResp;
+            _currentUowProvider = currentUowProvider;
         }
 
         [HttpGet]
-        [Uow(IsDisabled = false)]
+        [Uow(IsDisabled = true)]
         public ActionResult<IEnumerable<int>> Get()
         {
             var blog = new Blog()
