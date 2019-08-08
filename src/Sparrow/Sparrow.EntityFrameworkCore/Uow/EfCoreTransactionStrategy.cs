@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Sparrow.Core.Dependency;
-using Sparrow.Uow;
 using System.Collections.Generic;
+using Sparrow.Core.Domain.Uow;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {

@@ -1,8 +1,7 @@
-﻿using Sparrow.Core.Dependency;
-using Sparrow.Core.Domain.Uow;
-using System.Transactions;
+﻿using System.Transactions;
+using Sparrow.Core.Dependency;
 
-namespace Sparrow.Uow
+namespace Sparrow.Core.Domain.Uow
 {
     public class UowManager : IUowManager, ITransientDependency
     {
@@ -29,9 +28,8 @@ namespace Sparrow.Uow
 
         public IUowHandle Begin(UowOptions options)
         {
-            var outerUow = Current;
+            var outerUow = _currentUowProvider.Current;
 
-            // 使用范围事务
             if (outerUow != null && options.Scope == TransactionScopeOption.Required)
                 return new InnerUowHandle();
 
@@ -39,7 +37,9 @@ namespace Sparrow.Uow
 
             uow.OnCompleted += (_, __) => _currentUowProvider.Current = null;
             uow.OnFailed += (_, __) => _currentUowProvider.Current = null;
-            uow.OnDisposed += (_, __) => { };
+            uow.OnDisposed += (_, __) => _iocResolver.Release(uow);
+
+            uow.Begin(options);
 
             _currentUowProvider.Current = uow;
 

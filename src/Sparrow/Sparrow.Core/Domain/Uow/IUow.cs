@@ -1,4 +1,4 @@
-﻿namespace Sparrow.Uow
+﻿namespace Sparrow.Core.Domain.Uow
 {
     public interface IUow : IActiveUow, IUowHandle
     {

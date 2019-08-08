@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Transactions;
 
-namespace Sparrow.Uow
+namespace Sparrow.Core.Domain.Uow
 {
     public class UowOptions
     {

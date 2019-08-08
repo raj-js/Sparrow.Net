@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sparrow.Uow
+namespace Sparrow.Core.Domain.Uow
 {
     public interface IActiveUow
     {

@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Sparrow.Core.Dependency;
 using System;
+using System.Reflection;
 
 namespace Sparrow.Core
 {
@@ -13,18 +14,21 @@ namespace Sparrow.Core
         public Bootstrapper(Action<BootstrapperOptions> actionOptions = null)
         {
             Options = new BootstrapperOptions();
-            actionOptions?.Invoke(Options);
-
             IocManager = Options.IocManager;
+
+            IocManager.AddConventionalRegistrar(new BasicConventionalRegistrar());
+
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+
+            IocManager.Register<IScopedIocResolver, ScopedIocResolver>(DependencyLifeStyle.Transient);
+
+            actionOptions?.Invoke(Options);
         }
 
         public virtual void Initialize()
         {
             if (!IocManager.IsRegistered<Bootstrapper>())
                 IocManager.IocContainer.Register(Component.For<Bootstrapper>().Instance(this));
-
-            IocManager.AddConventionalRegistrar(new BasicConventionalRegistrar());
-            IocManager.Register<IScopedIocResolver, ScopedIocResolver>(DependencyLifeStyle.Transient);
         }
 
         public virtual void Dispose()

@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sparrow.Core.Dependency;
 using Sparrow.Core.Domain.Uow;
-using Sparrow.EntityFrameworkCore.Uow;
 
 namespace Sparrow.EntityFrameworkCore
 {
-    public class DbContextProvider<TDbContext> : IDbContextProvider<TDbContext>, ITransientDependency
+    public class DbContextProvider<TDbContext> : IDbContextProvider<TDbContext>
         where TDbContext : DbContext
     {
         private readonly ICurrentUowProvider _currentUowProvider;
@@ -17,7 +15,7 @@ namespace Sparrow.EntityFrameworkCore
 
         public TDbContext GetDbContext()
         {
-            return ((EfCoreUow)_currentUowProvider.Current).GetDbContext<TDbContext>();
+            return _currentUowProvider.Current.GetDbContext<TDbContext>();
         }
     }
 }

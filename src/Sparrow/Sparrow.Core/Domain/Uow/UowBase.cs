@@ -1,13 +1,16 @@
-﻿using Sparrow.Core.Data;
-using System;
+﻿using System;
+using Castle.Core;
+using Sparrow.Core.Data;
 
-namespace Sparrow.Uow
+namespace Sparrow.Core.Domain.Uow
 {
     public abstract class UowBase : IUow
     {
         public string Id { get; }
         public UowOptions Options { get; protected set; }
         public bool IsDisposed { get; protected set; }
+
+        [DoNotWire]
         public IUow Outer { get; set; }
 
         public event EventHandler OnCompleted;
@@ -16,10 +19,12 @@ namespace Sparrow.Uow
 
         private bool _isBeginCalledBefore;
         private bool _isCompleteCalledBefore;
+        private Exception _exception;
+        private bool _succeed;
 
         protected IConnectionStringResolver ConnectionStringResolver;
 
-        public UowBase(IConnectionStringResolver connectionStringResolver)
+        protected UowBase(IConnectionStringResolver connectionStringResolver)
         {
             Id = Guid.NewGuid().ToString("N");
 
@@ -28,12 +33,13 @@ namespace Sparrow.Uow
 
         public void Begin(UowOptions options)
         {
-            Options = options;
 
             if (_isBeginCalledBefore)
                 throw new Exception("不可以多次调用 Begin 方法");
 
             _isBeginCalledBefore = true;
+
+            Options = options;
 
             BeginUow();
         }
@@ -48,20 +54,33 @@ namespace Sparrow.Uow
             try
             {
                 CompleteUow();
+                _succeed = true;
                 OnCompleted?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception e)
             {
-                OnFailed?.Invoke(this, e);
+                _exception = e;
+                _succeed = false;
                 throw;
             }
         }
 
         public void Dispose()
         {
-            DisposeUow();
+            if (!_isBeginCalledBefore || IsDisposed)
+            {
+                return;
+            }
 
             IsDisposed = true;
+
+            if (!_succeed)
+            {
+                OnFailed?.Invoke(this, _exception);
+            }
+
+            DisposeUow();
+            OnDisposed?.Invoke(this, EventArgs.Empty);
         }
 
         protected abstract void BeginUow();

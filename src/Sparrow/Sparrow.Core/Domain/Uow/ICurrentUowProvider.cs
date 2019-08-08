@@ -1,6 +1,4 @@
-﻿using Sparrow.Uow;
-
-namespace Sparrow.Core.Domain.Uow
+﻿namespace Sparrow.Core.Domain.Uow
 {
     public interface ICurrentUowProvider
     {

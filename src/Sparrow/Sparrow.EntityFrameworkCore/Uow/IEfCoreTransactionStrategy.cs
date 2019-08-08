@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sparrow.Uow;
+using Sparrow.Core.Domain.Uow;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {

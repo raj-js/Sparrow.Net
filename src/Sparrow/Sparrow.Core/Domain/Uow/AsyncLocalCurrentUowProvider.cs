@@ -1,10 +1,12 @@
-﻿using Sparrow.Uow;
-using System.Threading;
+﻿using System.Threading;
+using Castle.Core;
+using Sparrow.Core.Dependency;
 
 namespace Sparrow.Core.Domain.Uow
 {
-    public class AsyncLocalCurrentUowProvider : ICurrentUowProvider
+    public class AsyncLocalCurrentUowProvider : ICurrentUowProvider, ITransientDependency
     {
+        [DoNotWire]
         public IUow Current
         {
             get => GetCurrentUow();

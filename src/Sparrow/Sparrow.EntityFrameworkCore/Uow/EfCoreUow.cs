@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sparrow.Core.Data;
 using Sparrow.Core.Dependency;
-using Sparrow.Uow;
 using System.Collections.Generic;
+using Sparrow.Core.Domain.Uow;
 
 namespace Sparrow.EntityFrameworkCore.Uow
 {
     public class EfCoreUow : UowBase, ITransientDependency
     {
-        private IDictionary<string, DbContext> _activeDbContexts;
-        private IIocResolver _iocResolver;
+        private readonly IDictionary<string, DbContext> _activeDbContexts;
+        private readonly IIocResolver _iocResolver;
         private readonly IDbContextResolver _dbContextResolver;
         private readonly IEfCoreTransactionStrategy _efCoreTransactionStrategy;
 
@@ -55,7 +55,7 @@ namespace Sparrow.EntityFrameworkCore.Uow
                     _iocResolver.Release(context);
                 }
             }
-           _activeDbContexts.Clear();
+            _activeDbContexts.Clear();
         }
 
         public TDbContext GetDbContext<TDbContext>() where TDbContext : DbContext
@@ -72,7 +72,7 @@ namespace Sparrow.EntityFrameworkCore.Uow
 
                 _activeDbContexts.Add(dbContextKey, dbContext);
             }
-            return (TDbContext) dbContext;
+            return (TDbContext)dbContext;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Sparrow.Uow
+namespace Sparrow.Core.Domain.Uow
 {
     public sealed class InnerUowHandle : IUowHandle
     {

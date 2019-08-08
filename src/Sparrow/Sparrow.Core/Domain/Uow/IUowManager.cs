@@ -1,7 +1,6 @@
-﻿using System;
-using System.Transactions;
+﻿using System.Transactions;
 
-namespace Sparrow.Uow
+namespace Sparrow.Core.Domain.Uow
 {
     public interface IUowManager
     {
