@@ -2,14 +2,7 @@
 
 
 
-## 连接对象		IDbConnection
-
-### IConnectionStringResolver
-
-### ITransactionStrategy
-
-### IDbConnectionManager
-
+## 仓储
 
 
 ## 工作单元
