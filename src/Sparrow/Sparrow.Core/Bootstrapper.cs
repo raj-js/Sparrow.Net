@@ -2,6 +2,7 @@
 using Sparrow.Core.Dependency;
 using System;
 using System.Reflection;
+using Sparrow.Core.Domain.Uow;
 
 namespace Sparrow.Core
 {
@@ -21,6 +22,8 @@ namespace Sparrow.Core
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
             IocManager.Register<IScopedIocResolver, ScopedIocResolver>(DependencyLifeStyle.Transient);
+
+            UowRegistrar.Initialize(IocManager);
 
             actionOptions?.Invoke(Options);
         }

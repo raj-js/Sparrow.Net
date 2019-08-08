@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Castle.Core;
 using Sparrow.Core.Data;
 
@@ -46,10 +47,7 @@ namespace Sparrow.Core.Domain.Uow
 
         public void Complete()
         {
-            if (_isCompleteCalledBefore)
-                throw new Exception("不可以多次调用 Begin 方法");
-
-            _isCompleteCalledBefore = true;
+            PreventMultipleComplete();
 
             try
             {
@@ -61,6 +59,23 @@ namespace Sparrow.Core.Domain.Uow
             {
                 _exception = e;
                 _succeed = false;
+                throw;
+            }
+        }
+
+        public async Task CompleteAsync()
+        {
+            PreventMultipleComplete();
+
+            try
+            {
+                await CompleteUowAsync();
+                _succeed = true;
+                OnCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _exception = ex;
                 throw;
             }
         }
@@ -87,6 +102,8 @@ namespace Sparrow.Core.Domain.Uow
 
         protected abstract void CompleteUow();
 
+        protected abstract Task CompleteUowAsync();
+
         protected abstract void DisposeUow();
 
         protected string ResolveConnectionString()
@@ -97,6 +114,14 @@ namespace Sparrow.Core.Domain.Uow
         protected string ResolveConnectionString(ConnectionStringResolveArgs args)
         {
             return ConnectionStringResolver.GetConnectionString(args);
+        }
+
+        private void PreventMultipleComplete()
+        {
+            if (_isCompleteCalledBefore)
+                throw new Exception("不可以多次调用 Begin 方法");
+
+            _isCompleteCalledBefore = true;
         }
     }
 }

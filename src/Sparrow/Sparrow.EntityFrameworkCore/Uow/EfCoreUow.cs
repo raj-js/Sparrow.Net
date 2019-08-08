@@ -2,6 +2,7 @@
 using Sparrow.Core.Data;
 using Sparrow.Core.Dependency;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Sparrow.Core.Domain.Uow;
 
 namespace Sparrow.EntityFrameworkCore.Uow
@@ -28,7 +29,7 @@ namespace Sparrow.EntityFrameworkCore.Uow
 
         protected override void BeginUow()
         {
-            if (Options.IsTransactional)
+            if (Options?.IsTransactional == true)
                 _efCoreTransactionStrategy.InitOptions(Options);
         }
 
@@ -39,13 +40,24 @@ namespace Sparrow.EntityFrameworkCore.Uow
                 context.SaveChanges();
             }
 
-            if (Options.IsTransactional)
+            if (Options?.IsTransactional == true)
+                _efCoreTransactionStrategy.Commit();
+        }
+
+        protected override async Task CompleteUowAsync()
+        {
+            foreach (var context in _activeDbContexts.Values)
+            {
+                await context.SaveChangesAsync();
+            }
+
+            if (Options?.IsTransactional == true)
                 _efCoreTransactionStrategy.Commit();
         }
 
         protected override void DisposeUow()
         {
-            if (Options.IsTransactional)
+            if (Options?.IsTransactional == true)
                 _efCoreTransactionStrategy.Dispose();
             else
             {
@@ -65,7 +77,7 @@ namespace Sparrow.EntityFrameworkCore.Uow
 
             if (!_activeDbContexts.TryGetValue(dbContextKey, out var dbContext))
             {
-                if (Options.IsTransactional)
+                if (Options?.IsTransactional == true)
                     dbContext = _efCoreTransactionStrategy.CreateDbContext<TDbContext>(connectionString);
                 else
                     dbContext = _dbContextResolver.Resolve<TDbContext>(connectionString, null);
