@@ -1,28 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Data\ConnectionWapperBase.cs" />
-    <Compile Remove="Data\IConnectionFactory.cs" />
-    <Compile Remove="Data\IConnectionWapper.cs" />
-    <Compile Remove="Data\ISparrowContext.cs" />
-    <Compile Remove="Data\ITransactionManager.cs" />
-    <Compile Remove="Data\ITransactionWapper.cs" />
-    <Compile Remove="Data\NullTransactionWapper.cs" />
-    <Compile Remove="Data\SparrowContext.cs" />
-    <Compile Remove="Data\TransactionOptions.cs" />
-    <Compile Remove="Data\TransactionWapperBase.cs" />
-    <Compile Remove="Modules\DependsOnAttribute.cs" />
-    <Compile Remove="Modules\IModuleManager.cs" />
-    <Compile Remove="Modules\ModuleCollection.cs" />
-    <Compile Remove="Modules\ModuleInfo.cs" />
-    <Compile Remove="Modules\ModuleManager.cs" />
-    <Compile Remove="Modules\SpwKernelModule.cs" />
-    <Compile Remove="Modules\SpwModule.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.0" />
@@ -43,11 +23,6 @@
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.0.0" />
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="5.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="Modules\" />
   </ItemGroup>
 
 </Project>

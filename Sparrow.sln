@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "presentation", "presentatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{24F8C51D-6211-41CA-B72A-3236FBD8955C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparrow.EntityFrameworkCore", "src\Sparrow\Sparrow.EntityFrameworkCore\Sparrow.EntityFrameworkCore.csproj", "{6D8E603A-CB9F-4D80-AA26-F040CE62A759}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{587D0DCA-DD05-4C4E-AD78-F9763710685E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{587D0DCA-DD05-4C4E-AD78-F9763710685E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{587D0DCA-DD05-4C4E-AD78-F9763710685E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 		{6C31325D-0347-4241-B505-9A027F598DBD} = {71811B39-6D0E-4905-A33A-BBA28109B02C}
 		{2D9181FD-AB66-4918-8736-59D968EC1EEA} = {71811B39-6D0E-4905-A33A-BBA28109B02C}
 		{24F8C51D-6211-41CA-B72A-3236FBD8955C} = {71811B39-6D0E-4905-A33A-BBA28109B02C}
+		{6D8E603A-CB9F-4D80-AA26-F040CE62A759} = {24F8C51D-6211-41CA-B72A-3236FBD8955C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BC1480FA-29E4-4CBC-93C1-D808740F39F5}
