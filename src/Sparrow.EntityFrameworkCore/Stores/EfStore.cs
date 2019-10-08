@@ -2,17 +2,18 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sparrow.Core;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Sparrow.EntityFrameworkCore.Stores
 {
-    public class Store<TEntity, TPKey> : IEfStore<TEntity, TPKey> where TEntity : class , IEntity<TPKey>
+    public class EfStore<TEntity, TPKey> : IEfStore<TEntity, TPKey> where TEntity : class , IEntity<TPKey>
     {
         public DbContext DbContext { get; private set; }
 
         private DbSet<TEntity> Set => DbContext.Set<TEntity>();
 
-        public Store(DbContext dbContext)
+        public EfStore(DbContext dbContext)
         {
             DbContext = dbContext;
         }
@@ -23,19 +24,6 @@ namespace Sparrow.EntityFrameworkCore.Stores
             return entry.Entity;
         }
 
-        public Task<int> Delete(TEntity entity)
-        {
-            var entry = AttemptAttach(entity);
-            entry.State = EntityState.Deleted;
-            return Task.FromResult(1);
-        }
-
-        public async Task<int> Delete(TPKey id)
-        {
-            var entity = await Single(id);
-            return await Delete(entity);
-        }
-
         public Task<int> Modify(TEntity entity)
         {
             var entry = AttemptAttach(entity);
@@ -43,14 +31,21 @@ namespace Sparrow.EntityFrameworkCore.Stores
             return Task.FromResult(1);
         }
 
-        public Task<IQueryable<TEntity>> Query()
+        public Task<IQueryable<TEntity>> All()
         {
             return Task.FromResult(Set.AsQueryable());
         }
 
-        public async Task<TEntity> Single(TPKey id)
+        public async Task<TEntity> Find(TPKey id)
         {
             return await Set.FindAsync(id);
+        }
+
+        public Task<int> Delete(TEntity entity)
+        {
+            var entry = AttemptAttach(entity);
+            entry.State = EntityState.Deleted;
+            return Task.FromResult(1);
         }
 
         public Task<int> SaveChanges()

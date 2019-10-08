@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparrow.Core", "src\Sparrow\Sparrow.Core\Sparrow.Core.csproj", "{587D0DCA-DD05-4C4E-AD78-F9763710685E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparrow.Core", "src\Sparrow.Core\Sparrow.Core.csproj", "{587D0DCA-DD05-4C4E-AD78-F9763710685E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{71811B39-6D0E-4905-A33A-BBA28109B02C}"
 EndProject
@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "presentation", "presentatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{24F8C51D-6211-41CA-B72A-3236FBD8955C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparrow.EntityFrameworkCore", "src\Sparrow\Sparrow.EntityFrameworkCore\Sparrow.EntityFrameworkCore.csproj", "{6D8E603A-CB9F-4D80-AA26-F040CE62A759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparrow.EntityFrameworkCore", "src\Sparrow.EntityFrameworkCore\Sparrow.EntityFrameworkCore.csproj", "{6D8E603A-CB9F-4D80-AA26-F040CE62A759}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparrow.Infrastructure", "src\Sparrow.Infrastructure\Sparrow.Infrastructure.csproj", "{BA548B52-6305-46AB-B626-9E9AA55583A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D8E603A-CB9F-4D80-AA26-F040CE62A759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA548B52-6305-46AB-B626-9E9AA55583A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA548B52-6305-46AB-B626-9E9AA55583A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA548B52-6305-46AB-B626-9E9AA55583A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA548B52-6305-46AB-B626-9E9AA55583A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{2D9181FD-AB66-4918-8736-59D968EC1EEA} = {71811B39-6D0E-4905-A33A-BBA28109B02C}
 		{24F8C51D-6211-41CA-B72A-3236FBD8955C} = {71811B39-6D0E-4905-A33A-BBA28109B02C}
 		{6D8E603A-CB9F-4D80-AA26-F040CE62A759} = {24F8C51D-6211-41CA-B72A-3236FBD8955C}
+		{BA548B52-6305-46AB-B626-9E9AA55583A2} = {24F8C51D-6211-41CA-B72A-3236FBD8955C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BC1480FA-29E4-4CBC-93C1-D808740F39F5}
