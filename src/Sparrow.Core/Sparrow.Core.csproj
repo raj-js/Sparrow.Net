@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="System\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Sparrow.Infrastructure\Sparrow.Infrastructure.csproj" />
   </ItemGroup>
 
