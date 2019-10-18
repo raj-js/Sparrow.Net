@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Sparrow.Core.DTOs;
+using System.Collections.Generic;
 
 namespace Blog.Core.Sparrow.DTOs.Response
 {
@@ -8,11 +9,11 @@ namespace Blog.Core.Sparrow.DTOs.Response
 
         public string Msg { get; set; }
 
-        public List<(string Code, string Msg)> Errors { get; set; }
+        public List<Error> Errors { get; set; }
 
         public ApiResponse()
         {
-            Errors = new List<(string Code, string Msg)>();
+            Errors = new List<Error>();
         }
 
         public static ApiResponse Assert(bool isSuccess)

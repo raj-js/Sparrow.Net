@@ -2,12 +2,12 @@
 {
     public class PageQuery
     {
-        public int PageIndex { get; set; }
+        public int PageIndex { get; set; } = 1;
 
-        public int PageSize { get; set; }
+        public int PageSize { get; set; } = 10;
 
-        public string Order { get; set; }
+        public string Order { get; set; } = "Id";
 
-        public bool IsAsc { get; set; }
+        public bool IsAsc { get; set; } = true;
     }
 }
