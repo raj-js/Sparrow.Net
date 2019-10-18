@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
 using Sparrow.Core.Stores;
+using Sparrow.Stores.Mongo.IdGenerators;
 using System;
 
 namespace Sparrow.Stores.Mongo
@@ -12,6 +13,8 @@ namespace Sparrow.Stores.Mongo
         {
             BsonSerializer.RegisterIdGenerator(typeof(string), StringObjectIdGenerator.Instance);
             BsonSerializer.RegisterIdGenerator(typeof(Guid), CombGuidGenerator.Instance);
+            BsonSerializer.RegisterIdGenerator(typeof(int), IntGenerator.Instance);
+            BsonSerializer.RegisterIdGenerator(typeof(long), LongGenerator.Instance);
 
             var mongoAccessor = new MongoAccessor(action);
             builder.RegisterInstance(mongoAccessor).As<IMongoAccessor>().SingleInstance();
