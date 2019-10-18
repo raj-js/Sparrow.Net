@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sparrow.Core.Services
 {
-    public abstract class ServiceBase
+    public class CURLService
         <
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
@@ -31,7 +31,7 @@ namespace Sparrow.Core.Services
         protected IMapper Mapper { get; private set; }
         private readonly ICURLStore<TEntity, TKey> _store;
 
-        public ServiceBase(IMapper mapper, ICURLStore<TEntity, TKey> store)
+        public CURLService(IMapper mapper, ICURLStore<TEntity, TKey> store)
         {
             Mapper = mapper;
             _store = store;
