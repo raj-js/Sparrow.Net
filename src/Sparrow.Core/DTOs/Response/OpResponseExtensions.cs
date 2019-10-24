@@ -2,9 +2,9 @@
 
 namespace Blog.Core.Sparrow.DTOs.Response
 {
-    public static class ApiResponseExtensions
+    public static class OpResponseExtensions
     {
-        public static void AddError(this ApiResponse response, string code, string msg)
+        public static void AddError(this OpResponse response, string code, string msg)
         {
             response.Errors.Add(Error.Create(code, msg));
         }

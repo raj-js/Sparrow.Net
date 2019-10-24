@@ -8,7 +8,7 @@ namespace Sparrow.Core
     {
         public static void AddSparrow(this ContainerBuilder builder)
         {
-            builder.RegisterGeneric(typeof(CURLService<,,,,>)).AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof(AppServiceBase<,,,,>)).AsImplementedInterfaces().InstancePerLifetimeScope();
         }
 
         public static void UseSparrow(this IApplicationBuilder app)

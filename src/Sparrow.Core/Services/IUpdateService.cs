@@ -1,4 +1,4 @@
-﻿using Sparrow.Core;
+﻿using Blog.Core.Sparrow.DTOs.Response;
 using System;
 using System.Threading.Tasks;
 
@@ -13,14 +13,14 @@ namespace Sparrow.Core.Services
         /// </summary>
         /// <param name="updateDTO"></param>
         /// <returns></returns>
-        TDTO Update(TUpdateDTO updateDTO);
+        OpResponse<TDTO> Update(TUpdateDTO updateDTO);
 
         /// <summary>
         /// 异步更新实体
         /// </summary>
         /// <param name="updateDTO"></param>
         /// <returns></returns>
-        Task<TDTO> UpdateAsync(TUpdateDTO updateDTO);
+        Task<OpResponse<TDTO>> UpdateAsync(TUpdateDTO updateDTO);
 
         /// <summary>
         /// 部分更新
@@ -28,7 +28,7 @@ namespace Sparrow.Core.Services
         /// <param name="id"></param>
         /// <param name="selectors"></param>
         /// <returns></returns>
-        TDTO Update(TKey id, params (string Field, object Value)[] selectors);
+        OpResponse<TDTO> Update(TKey id, params (string Field, object Value)[] selectors);
 
         /// <summary>
         /// 异步部分更新
@@ -36,6 +36,6 @@ namespace Sparrow.Core.Services
         /// <param name="id"></param>
         /// <param name="selectors"></param>
         /// <returns></returns>
-        Task<TDTO> UpdateAsync(TKey id, params (string Field, object Value)[] selectors);
+        Task<OpResponse<TDTO>> UpdateAsync(TKey id, params (string Field, object Value)[] selectors);
     }
 }

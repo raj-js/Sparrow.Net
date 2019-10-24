@@ -7,15 +7,15 @@ namespace Sparrow.Core.Mapping
         public abstract void Config(IMapperConfigurationExpression cfg);
     }
 
-    public abstract class MapperConfigurationBase<TEntity, TCreateReqDto, TUpdateReqDto, TRespDto> :
+    public abstract class MapperConfigurationBase<TEntity, TCreateDTO, TUpdateDTO, TDTO> :
         MapperConfigurationBase,
-        IMapperConfiguration<TEntity, TCreateReqDto, TUpdateReqDto, TRespDto>
+        IMapperConfiguration<TEntity, TCreateDTO, TUpdateDTO, TDTO>
     {
         public override void Config(IMapperConfigurationExpression cfg)
         {
-            cfg.CreateMap<TCreateReqDto, TEntity>();
-            cfg.CreateMap<TUpdateReqDto, TEntity>();
-            cfg.CreateMap<TEntity, TRespDto>();
+            cfg.CreateMap<TCreateDTO, TEntity>();
+            cfg.CreateMap<TUpdateDTO, TEntity>();
+            cfg.CreateMap<TEntity, TDTO>();
         }
     }
 }

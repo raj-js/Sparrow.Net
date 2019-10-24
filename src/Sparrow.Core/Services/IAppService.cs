@@ -1,9 +1,8 @@
-﻿using Sparrow.Core;
-using System;
+﻿using System;
 
 namespace Sparrow.Core.Services
 {
-    public interface ICURLService
+    public interface IAppService
         <
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
