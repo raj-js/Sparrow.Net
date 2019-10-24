@@ -1,7 +1,7 @@
 ﻿using Sparrow.Core.DTOs;
 using System.Collections.Generic;
 
-namespace Blog.Core.Sparrow.DTOs.Response
+namespace Sparrow.Core.DTOs.Responses
 {
     public class OpResponse
     {

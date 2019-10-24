@@ -1,11 +1,11 @@
-﻿using Blog.Core.Sparrow.DTOs.Response;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sparrow.Core.DTOs.Paging;
+using Sparrow.Core.DTOs.Responses;
 using Sparrow.Core.Services;
 using System;
 using System.Threading.Tasks;
-using static Blog.Core.Sparrow.DTOs.Response.OpResponse;
+using static Sparrow.Core.DTOs.Responses.OpResponse;
 
 namespace Sparrow.Core.ApiControllers
 {

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using Blog.Core.Sparrow.DTOs.Response;
+using Sparrow.Core.DTOs.Responses;
 using Sparrow.Core.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Blog.Core.Sparrow.DTOs.Response.OpResponse;
+using static Sparrow.Core.DTOs.Responses.OpResponse;
 
 namespace Sparrow.Core.Services
 {

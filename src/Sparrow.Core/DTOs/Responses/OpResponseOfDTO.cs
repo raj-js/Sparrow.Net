@@ -1,4 +1,4 @@
-﻿namespace Blog.Core.Sparrow.DTOs.Response
+﻿namespace Sparrow.Core.DTOs.Responses
 {
     public class OpResponse<TDTO> : OpResponse
     {

@@ -1,6 +1,6 @@
 ﻿using Sparrow.Core.DTOs;
 
-namespace Blog.Core.Sparrow.DTOs.Response
+namespace Sparrow.Core.DTOs.Responses
 {
     public static class OpResponseExtensions
     {

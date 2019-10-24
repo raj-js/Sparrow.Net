@@ -1,4 +1,4 @@
-﻿using Blog.Core.Sparrow.DTOs.Response;
+﻿using Sparrow.Core.DTOs.Responses;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
