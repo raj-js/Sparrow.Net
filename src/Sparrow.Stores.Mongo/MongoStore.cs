@@ -14,7 +14,7 @@ namespace Sparrow.Stores.Mongo
         IRemoveStore<TEntity, TKey>,
         IUpdateStore<TEntity, TKey>,
         IQueryStore<TEntity, TKey>,
-        ICURLStore<TEntity, TKey>
+        IStore<TEntity, TKey>
 
         where TEntity : IEntity<TKey>
         where TKey : IEquatable<TKey>

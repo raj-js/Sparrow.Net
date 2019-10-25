@@ -23,7 +23,7 @@ namespace Sparrow.Stores.Mongo
             builder.RegisterGeneric(typeof(MongoStore<,>)).As(typeof(IRemoveStore<,>)).InstancePerLifetimeScope();
             builder.RegisterGeneric(typeof(MongoStore<,>)).As(typeof(IUpdateStore<,>)).InstancePerLifetimeScope();
             builder.RegisterGeneric(typeof(MongoStore<,>)).As(typeof(IQueryStore<,>)).InstancePerLifetimeScope();
-            builder.RegisterGeneric(typeof(MongoStore<,>)).As(typeof(ICURLStore<,>)).InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof(MongoStore<,>)).As(typeof(IStore<,>)).InstancePerLifetimeScope();
         }
     }
 }

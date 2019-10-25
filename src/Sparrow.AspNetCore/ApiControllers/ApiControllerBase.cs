@@ -9,6 +9,11 @@ using static Sparrow.Core.DTOs.Responses.OpResponse;
 namespace Sparrow.Core.ApiControllers
 {
     [ApiController]
+    public abstract class ApiControllerBase : ControllerBase
+    {
+    }
+
+    [ApiController]
     public abstract class ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO> :
         ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO, TDTO>
         where TEntity : IEntity<TKey>
@@ -20,7 +25,7 @@ namespace Sparrow.Core.ApiControllers
     }
 
     [ApiController]
-    public abstract class ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TListItemDTO, TDTO> : ControllerBase
+    public abstract class ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TListItemDTO, TDTO> : ApiControllerBase
         where TEntity : IEntity<TKey>
         where TKey : IEquatable<TKey>
     {

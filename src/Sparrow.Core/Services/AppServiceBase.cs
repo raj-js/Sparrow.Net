@@ -9,13 +9,18 @@ using static Sparrow.Core.DTOs.Responses.OpResponse;
 
 namespace Sparrow.Core.Services
 {
+    public class AppServiceBase : IAppService
+    {
+
+    }
+
     public class AppServiceBase
         <
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
         TDTO
-        >
-        : AppServiceBase
+        > :
+        AppServiceBase
         <
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
@@ -35,7 +40,7 @@ namespace Sparrow.Core.Services
         where TEntity : IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
-        public AppServiceBase(IMapper mapper, ICURLStore<TEntity, TKey> store) : base(mapper, store)
+        public AppServiceBase(IMapper mapper, IStore<TEntity, TKey> store) : base(mapper, store)
         {
         }
     }
@@ -46,7 +51,6 @@ namespace Sparrow.Core.Services
         TCreateDTO, TUpdateDTO,
         TListItemDTO, TDTO
         > :
-
         ICreateService<TEntity, TKey, TCreateDTO, TDTO>,
         IRemoveService<TEntity, TKey>,
         IUpdateService<TEntity, TKey, TUpdateDTO, TDTO>,
@@ -62,9 +66,9 @@ namespace Sparrow.Core.Services
         where TKey : IEquatable<TKey>
     {
         protected IMapper Mapper { get; private set; }
-        protected ICURLStore<TEntity, TKey> Store { get; private set; }
+        protected IStore<TEntity, TKey> Store { get; private set; }
 
-        public AppServiceBase(IMapper mapper, ICURLStore<TEntity, TKey> store)
+        public AppServiceBase(IMapper mapper, IStore<TEntity, TKey> store)
         {
             Mapper = mapper;
             Store = store;

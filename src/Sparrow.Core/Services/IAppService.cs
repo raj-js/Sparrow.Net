@@ -2,6 +2,11 @@
 
 namespace Sparrow.Core.Services
 {
+    public interface IAppService 
+    {
+    
+    }
+
     public interface IAppService
         <
         TEntity, TKey,
