@@ -9,7 +9,7 @@ namespace Sparrow.Core.Mapping
     {
         public static void AppliyMapperConfigurations(this IMapperConfigurationExpression cfg, params Assembly[] assemblies)
         {
-            cfg.RegisterMappingFromAssembly(typeof(MapperConfigurationBase<,,,>).Assembly);
+            cfg.RegisterMappingFromAssembly(typeof(MapperConfigurationBase).Assembly);
 
             foreach (var assembly in assemblies)
             {

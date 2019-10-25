@@ -14,17 +14,48 @@ namespace Sparrow.Core.Services
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
         TDTO
+        >
+        : AppServiceBase
+        <
+        TEntity, TKey,
+        TCreateDTO, TUpdateDTO,
+        TDTO, TDTO
+        >,
+        ICreateService<TEntity, TKey, TCreateDTO, TDTO>,
+        IRemoveService<TEntity, TKey>,
+        IUpdateService<TEntity, TKey, TUpdateDTO, TDTO>,
+        IQueryService<TEntity, TKey, TDTO, TDTO>,
+        IAppService
+        <
+        TEntity, TKey,
+        TCreateDTO, TUpdateDTO,
+        TDTO, TDTO
+        >
+
+        where TEntity : IEntity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        public AppServiceBase(IMapper mapper, ICURLStore<TEntity, TKey> store) : base(mapper, store)
+        {
+        }
+    }
+
+    public class AppServiceBase
+        <
+        TEntity, TKey,
+        TCreateDTO, TUpdateDTO,
+        TListItemDTO, TDTO
         > :
 
         ICreateService<TEntity, TKey, TCreateDTO, TDTO>,
         IRemoveService<TEntity, TKey>,
         IUpdateService<TEntity, TKey, TUpdateDTO, TDTO>,
-        IQueryService<TEntity, TKey, TDTO>,
+        IQueryService<TEntity, TKey, TListItemDTO, TDTO>,
         IAppService
         <
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
-        TDTO
+        TListItemDTO, TDTO
         >
 
         where TEntity : IEntity<TKey>
@@ -41,9 +72,33 @@ namespace Sparrow.Core.Services
 
         #region protected
 
-        protected virtual TEntity ToEntity(object dto) => Mapper.Map<TEntity>(dto);
+        /// <summary>
+        /// map DTO to Entity
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        protected virtual TEntity ToEntity(TCreateDTO dto) => Mapper.Map<TEntity>(dto);
 
+        /// <summary>
+        /// map DTO to Entity
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        protected virtual TEntity ToEntity(TUpdateDTO dto) => Mapper.Map<TEntity>(dto);
+
+        /// <summary>
+        /// map Entity to DTO
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         protected virtual TDTO ToDTO(TEntity entity) => Mapper.Map<TDTO>(entity);
+
+        /// <summary>
+        /// map Entity to ListItemDTO
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        protected virtual TListItemDTO ToListItemDTO(TEntity entity) => Mapper.Map<TListItemDTO>(entity);
 
         #endregion
 
@@ -81,14 +136,14 @@ namespace Sparrow.Core.Services
 
         public OpResponse CreateMany(IEnumerable<TCreateDTO> createDTOs)
         {
-            var entities = createDTOs.Select(s => ToEntity(s));
+            var entities = createDTOs.Select(ToEntity);
             Store.CreateMany(entities);
             return Success();
         }
 
         public async Task<OpResponse> CreateManyAsync(IEnumerable<TCreateDTO> createDTOs)
         {
-            var entities = createDTOs.Select(s => ToEntity(s));
+            var entities = createDTOs.Select(ToEntity);
             await Store.CreateManyAsync(entities);
             return Success();
         }
@@ -138,14 +193,19 @@ namespace Sparrow.Core.Services
             return Success(ToDTO(entity));
         }
 
-        public async Task<OpResponse<(List<TDTO> List, long Total)>> PageQuery(int pageIndex, int pageSize, params (string Field, bool IsAsc)[] sortFields)
+        public async Task<OpResponse<(List<TListItemDTO> List, long Total)>> PageQuery(int pageIndex, int pageSize, params (string Field, bool IsAsc)[] sortFields)
         {
             var (Entities, Total) = await Store.PageQuery(s => true, sortFields, pageIndex, pageSize);
 
             return Success((
-                Entities.Select(s => ToDTO(s)).ToList(),
+                Entities.Select(ToListItemDTO).ToList(),
                 Total
                 ));
+        }
+
+        public OpResponse<List<TListItemDTO>> All()
+        {
+            return Success(Store.Query().Select(ToListItemDTO).ToList());
         }
     }
 }

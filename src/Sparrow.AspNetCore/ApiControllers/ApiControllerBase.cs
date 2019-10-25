@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Sparrow.Core.DTOs.Paging;
 using Sparrow.Core.DTOs.Responses;
 using Sparrow.Core.Services;
@@ -10,15 +9,26 @@ using static Sparrow.Core.DTOs.Responses.OpResponse;
 namespace Sparrow.Core.ApiControllers
 {
     [ApiController]
-    public abstract class ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO> : ControllerBase
+    public abstract class ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO> :
+        ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO, TDTO>
         where TEntity : IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
-        protected readonly IAppService<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO> CURLService;
-
-        public ApiControllerBase(IAppService<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO> curlService)
+        public ApiControllerBase(IAppService<TEntity, TKey, TCreateDTO, TUpdateDTO, TDTO, TDTO> appService) : base(appService)
         {
-            CURLService = curlService;
+        }
+    }
+
+    [ApiController]
+    public abstract class ApiControllerBase<TEntity, TKey, TCreateDTO, TUpdateDTO, TListItemDTO, TDTO> : ControllerBase
+        where TEntity : IEntity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        protected readonly IAppService<TEntity, TKey, TCreateDTO, TUpdateDTO, TListItemDTO, TDTO> AppService;
+
+        public ApiControllerBase(IAppService<TEntity, TKey, TCreateDTO, TUpdateDTO, TListItemDTO, TDTO> appService)
+        {
+            AppService = appService;
         }
 
         /// <summary>
@@ -27,15 +37,15 @@ namespace Sparrow.Core.ApiControllers
         /// <param name="query">查询条件</param>
         /// <returns></returns>
         [HttpGet("paging")]
-        [Authorize]
-        public virtual async Task<OpResponse<Paged<TDTO>>> Paging([FromQuery]PageQuery query)
+        // [Authorize]
+        public virtual async Task<OpResponse<Paged<TListItemDTO>>> Paging([FromQuery]PageQuery query)
         {
-            var opResponse = await CURLService.PageQuery(query.PageIndex, query.PageSize, (query.Order, query.IsAsc));
+            var opResponse = await AppService.PageQuery(query.PageIndex, query.PageSize, (query.Order, query.IsAsc));
 
             if (opResponse.IsSuccess)
                 return Success(PagingHelper.From(opResponse.Data));
 
-            return Failure<Paged<TDTO>>();
+            return Failure<Paged<TListItemDTO>>();
         }
 
         /// <summary>
@@ -44,10 +54,10 @@ namespace Sparrow.Core.ApiControllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize]
+        // [Authorize]
         public virtual async Task<OpResponse<TDTO>> Get(TKey id)
         {
-            return await CURLService.FindAsync(id);
+            return await AppService.FindAsync(id);
         }
 
         /// <summary>
@@ -56,10 +66,10 @@ namespace Sparrow.Core.ApiControllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public virtual async Task<OpResponse<TDTO>> Post([FromBody]TCreateDTO dto)
         {
-            return await CURLService.CreateAsync(dto);
+            return await AppService.CreateAsync(dto);
         }
 
         /// <summary>
@@ -68,10 +78,10 @@ namespace Sparrow.Core.ApiControllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize]
+        // [Authorize]
         public virtual async Task<OpResponse<TDTO>> Put([FromBody]TUpdateDTO dto)
         {
-            return await CURLService.UpdateAsync(dto);
+            return await AppService.UpdateAsync(dto);
         }
 
         /// <summary>
@@ -80,10 +90,10 @@ namespace Sparrow.Core.ApiControllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize]
+        // [Authorize]
         public virtual async Task<OpResponse> Delete(TKey id)
         {
-            return await CURLService.RemoveAsync(id);
+            return await AppService.RemoveAsync(id);
         }
     }
 }
