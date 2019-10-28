@@ -9,7 +9,7 @@ namespace Sparrow.Stores.Mongo
 {
     public static class MongoExtensions
     {
-        public static void AddMongo(this ContainerBuilder builder, Action<MongoSettings> action)
+        public static void AddSparrowMongo(this ContainerBuilder builder, Action<MongoSettings> action)
         {
             BsonSerializer.RegisterIdGenerator(typeof(string), StringObjectIdGenerator.Instance);
             BsonSerializer.RegisterIdGenerator(typeof(Guid), CombGuidGenerator.Instance);

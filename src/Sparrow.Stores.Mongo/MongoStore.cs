@@ -16,7 +16,7 @@ namespace Sparrow.Stores.Mongo
         IQueryStore<TEntity, TKey>,
         IStore<TEntity, TKey>
 
-        where TEntity : IEntity<TKey>
+        where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
         private readonly IMongoAccessor _mongoAccessor;
@@ -248,6 +248,16 @@ namespace Sparrow.Stores.Mongo
             var updateDef = updator.Combine(selectors.Select(s => updator.AddToSet(s.Field, s.Value)));
             await Collection.UpdateOneAsync(filter.Eq("Id", id), updateDef);
             return await FindAsync(id);
+        }
+
+        public void Save()
+        {
+            
+        }
+
+        public Task SaveAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

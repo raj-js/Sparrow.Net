@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Sparrow.Core.Stores
 {
     public interface IRemoveStore<TEntity, TKey> 
-        where TEntity : IEntity<TKey>
+        where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
         /// <summary>

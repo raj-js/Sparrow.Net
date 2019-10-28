@@ -37,7 +37,7 @@ namespace Sparrow.Core.Services
         TDTO, TDTO
         >
 
-        where TEntity : IEntity<TKey>
+        where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
         public AppServiceBase(IMapper mapper, IStore<TEntity, TKey> store) : base(mapper, store)
@@ -62,7 +62,7 @@ namespace Sparrow.Core.Services
         TListItemDTO, TDTO
         >
 
-        where TEntity : IEntity<TKey>
+        where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
         protected IMapper Mapper { get; private set; }

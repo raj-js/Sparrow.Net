@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Sparrow.Core.Stores
 {
@@ -8,9 +9,11 @@ namespace Sparrow.Core.Stores
         IUpdateStore<TEntity, TKey>,
         IQueryStore<TEntity, TKey>
 
-        where TEntity : IEntity<TKey>
+        where TEntity : class, IEntity<TKey>
         where TKey : IEquatable<TKey>
     {
+        void Save();
 
+        Task SaveAsync();
     }
 }
