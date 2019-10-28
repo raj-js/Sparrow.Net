@@ -34,7 +34,7 @@ namespace Sparrow.Core.Services
         <
         TEntity, TKey,
         TCreateDTO, TUpdateDTO,
-        TDTO, TDTO
+        TDTO
         >
 
         where TEntity : class, IEntity<TKey>

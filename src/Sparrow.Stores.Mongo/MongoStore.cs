@@ -141,13 +141,13 @@ namespace Sparrow.Stores.Mongo
         public TEntity Single(Expression<Func<TEntity, bool>> predicate)
         {
             var builder = new FilterDefinitionBuilder<TEntity>();
-            return Collection.Find(builder.Where(predicate)).Single();
+            return Collection.Find(builder.Where(predicate)).SingleOrDefault();
         }
 
         public Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate)
         {
             var builder = new FilterDefinitionBuilder<TEntity>();
-            return Collection.Find(builder.Where(predicate)).SingleAsync();
+            return Collection.Find(builder.Where(predicate)).SingleOrDefaultAsync();
         }
 
         public TEntity Update(TEntity entity)
