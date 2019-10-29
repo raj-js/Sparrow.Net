@@ -3,6 +3,7 @@ using Sparrow.Core.DTOs.Paging;
 using Sparrow.Core.DTOs.Responses;
 using Sparrow.Core.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Sparrow.Core.DTOs.Responses.OpResponse;
 
@@ -34,6 +35,19 @@ namespace Sparrow.Core.ApiControllers
         public ApiControllerBase(IAppService<TEntity, TKey, TCreateDTO, TUpdateDTO, TListItemDTO, TDTO> appService)
         {
             AppService = appService;
+        }
+
+        /// <summary>
+        /// 查询所有
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("all")]
+        public virtual async Task<OpResponse<List<TListItemDTO>>> All() 
+        {
+            return await 
+                Task<OpResponse<List<TListItemDTO>>>
+                .Factory
+                .StartNew(AppService.All);   
         }
 
         /// <summary>

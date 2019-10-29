@@ -38,6 +38,13 @@ namespace Sparrow.Core.DTOs.Responses
 
         public static OpResponse<TDTO> Failure<TDTO>() => new OpResponse<TDTO>() { Status = -1 };
 
+        public static OpResponse<TDTO> Failure<TDTO>(string code, string msg)
+        {
+            var resp = new OpResponse<TDTO>() { Status = -1 };
+            resp.AddError(code, msg);
+            return resp;
+        }
+
         public static OpResponse Success() => Assert(true);
 
         public static OpResponse<TDTO> Success<TDTO>(TDTO dto) => new OpResponse<TDTO>() { Data = dto };
