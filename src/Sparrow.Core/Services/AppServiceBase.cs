@@ -14,6 +14,28 @@ namespace Sparrow.Core.Services
 
     }
 
+    public class AppServiceBase<TEntity, TKey> :
+        AppServiceBase
+        <
+        TEntity, TKey,
+        TEntity, TEntity,
+        TEntity
+        >,
+        ICreateService<TEntity, TKey, TEntity, TEntity>,
+        IRemoveService<TEntity, TKey>,
+        IUpdateService<TEntity, TKey, TEntity, TEntity>,
+        IQueryService<TEntity, TKey, TEntity, TEntity>,
+
+        IAppService<TEntity, TKey>
+
+        where TEntity : class, IEntity<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        public AppServiceBase(IMapper mapper, IStore<TEntity, TKey> store) : base(mapper, store)
+        {
+        }
+    }
+
     public class AppServiceBase
         <
         TEntity, TKey,

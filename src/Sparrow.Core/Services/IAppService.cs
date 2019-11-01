@@ -2,9 +2,27 @@
 
 namespace Sparrow.Core.Services
 {
-    public interface IAppService 
+    public interface IAppService
     {
-    
+
+    }
+
+    public interface IAppService<TEntity, TKey> :
+       IAppService
+       <
+       TEntity, TKey,
+       TEntity, TEntity,
+       TEntity
+       >,
+       ICreateService<TEntity, TKey, TEntity, TEntity>,
+       IRemoveService<TEntity, TKey>,
+       IUpdateService<TEntity, TKey, TEntity, TEntity>,
+       IQueryService<TEntity, TKey, TEntity, TEntity>
+
+       where TEntity : IEntity<TKey>
+       where TKey : IEquatable<TKey>
+    {
+
     }
 
     public interface IAppService

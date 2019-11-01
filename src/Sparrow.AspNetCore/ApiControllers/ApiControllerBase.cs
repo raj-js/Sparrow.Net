@@ -74,7 +74,7 @@ namespace Sparrow.Core.ApiControllers
         /// <returns></returns>
         [HttpGet("{id}")]
         // [Authorize]
-        public virtual async Task<OpResponse<TDTO>> Get(TKey id)
+        public virtual async Task<OpResponse<TDTO>> Get([FromRoute]TKey id)
         {
             return await AppService.FindAsync(id);
         }
@@ -110,7 +110,7 @@ namespace Sparrow.Core.ApiControllers
         /// <returns></returns>
         [HttpDelete("{id}")]
         // [Authorize]
-        public virtual async Task<OpResponse> Delete(TKey id)
+        public virtual async Task<OpResponse> Delete([FromRoute]TKey id)
         {
             return await AppService.RemoveAsync(id);
         }
