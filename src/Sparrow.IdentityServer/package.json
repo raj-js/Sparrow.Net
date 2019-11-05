@@ -1,7 +1,15 @@
 {
   "dependencies": {
+    "bootstrap": "^4.3.1",
+    "bootstrap-material-design": "^4.1.2",
     "element-ui": "^2.12.0",
+    "jquery": "^3.4.1",
+    "vee-validate": "^3.0.11",
     "vue": "^2.6.10",
     "vuetify": "^2.1.9"
+  },
+  "devDependencies": {
+    "@mdi/font": "^4.5.95",
+    "material-design-icons-iconfont": "^5.0.1"
   }
 }

@@ -1,4 +1,6 @@
-﻿using IdentityServer4.Services;
+﻿using IdentityServer4.Events;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Sparrow.IdentityServer.Controllers
 {
-    //[SecurityHeaders]
+    [SecurityHeaders]
     [AllowAnonymous]
     public class AccountController : Controller
     {
@@ -67,15 +69,142 @@ namespace Sparrow.IdentityServer.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginFormModel model) 
+        public async Task<IActionResult> Login(LoginFormModel model, string button)
         {
-            return View();
+            // 根据 returnUrl 获得认证请求
+            var authorizeRequest = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+
+            // 若用户取消登录
+            if (button != "login")
+            {
+                if (authorizeRequest != null)
+                {
+                    // 用户取消登录，返回OIDC访问被拒绝的响应给客户端
+                    await _interaction.GrantConsentAsync(authorizeRequest, ConsentResponse.Denied);
+
+                    if (await _clientStore.IsPkceClientAsync(authorizeRequest.ClientId))
+                    {
+                        return View("Redirect", new RedirectViewModel
+                        {
+                            RedirectUrl = model.ReturnUrl
+                        });
+                    }
+
+                    return Redirect(model.ReturnUrl);
+                }
+
+                // 无效请求
+                return Redirect("~/");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // 实际上可能会为 UserName 登录， PhoneNo 登录， Email 登录
+                var user = await _userManager.FindByNameAsync(model.UserName);
+
+                if (user != null)
+                {
+                    var signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, true);
+
+                    if (signInResult.Succeeded)
+                    {
+                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
+
+                        if (authorizeRequest != null)
+                        {
+                            if (await _clientStore.IsPkceClientAsync(authorizeRequest.ClientId))
+                                return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
+
+                            return Redirect(model.ReturnUrl);
+                        }
+
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                            return Redirect(model.ReturnUrl);
+                        else if (string.IsNullOrEmpty(model.ReturnUrl))
+                            return Redirect("~/");
+                        else
+                            throw new Exception("无效的 returnUrl");
+                    }
+
+                    // 是否需要双因素登录
+                    if (signInResult.RequiresTwoFactor)
+                        return RedirectToAction("LoginWith2fa", new { model.ReturnUrl, model.RememberMe });
+
+                    // 用户已经锁定
+                    if (signInResult.IsLockedOut)
+                        return View("Lockout");
+                }
+
+                await _events.RaiseAsync(new UserLoginFailureEvent(model.UserName, "无效的凭据"));
+                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+            }
+
+            // 认证失败
+            var vm = await BuildLoginViewModelAsync(model);
+            return View(vm);
+        }
+
+        /// <summary>
+        /// 双因素登录
+        /// </summary>
+        /// <param name="rememberMe"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl) 
+        {
+            // 确认用户已经经过了用户名密码验证
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (user == null)
+                throw new InvalidOperationException("无效的 2fa 登陆操作");
+
+            var vm = new LoginWith2faViewModel 
+            {
+                RememberMe = rememberMe,
+                ReturnUrl = returnUrl
+            };
+
+            return View(vm);
+        }
+
+        /// <summary>
+        /// 双因素登录
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginWith2fa(LoginWith2faViewModel model)
+        {
+            if (ModelState.IsValid == false)
+                return View(model);
+
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (user == null)
+                throw new InvalidOperationException("无效的 2fa 登陆操作");
+
+            var authenticatorCode = model.TwoFactorCode
+                .Replace(" ", string.Empty)
+                .Replace("-", string.Empty);
+
+            var signInResult = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe, model.RememberMachine);
+
+            if (signInResult.Succeeded)
+                return LocalRedirect(model.ReturnUrl);
+
+            if (signInResult.IsLockedOut)
+                return View("Lockout");
+
+            ModelState.AddModelError(string.Empty, "无效的认证码");
+            return View(model);
         }
 
         #region privates
 
         /// <summary>
-        /// 构建登录视图
+        /// 构建登录视图模型
         /// </summary>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
@@ -84,17 +213,17 @@ namespace Sparrow.IdentityServer.Controllers
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null)
             {
-                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
+                var enableLocalLogin = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
 
-                // this is meant to short circuit the UI and only trigger the one external IdP
                 var vm = new LoginViewModel
                 {
-                    EnableLocalLogin = local,
+                    EnableLocalLogin = enableLocalLogin,
                     ReturnUrl = returnUrl,
                     UserName = context?.LoginHint,
                 };
 
-                if (!local)
+                // 使用的是第三方登录
+                if (!enableLocalLogin)
                 {
                     vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
                 }
@@ -137,6 +266,19 @@ namespace Sparrow.IdentityServer.Controllers
                 UserName = context?.LoginHint,
                 ExternalProviders = providers.ToArray()
             };
+        }
+
+        /// <summary>
+        /// 构建登录视图模型
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginFormModel model)
+        {
+            var vm = await BuildLoginViewModelAsync(model.ReturnUrl);
+            vm.UserName = model.UserName;
+            vm.RememberMe = model.RememberMe;
+            return vm;
         }
 
         #endregion

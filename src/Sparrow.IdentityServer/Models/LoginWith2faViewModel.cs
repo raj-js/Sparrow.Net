@@ -3,32 +3,32 @@
 namespace Sparrow.IdentityServer.Models
 {
     /// <summary>
-    /// 登录表单模型
+    /// 双因素登录
     /// </summary>
-    public class LoginFormModel
+    public class LoginWith2faViewModel
     {
         /// <summary>
-        /// 用户名
+        /// 双因素代码
         /// </summary>
-        [Display(Name = "账号")]
-        [Required(ErrorMessage = "账号必填")]
-        public string UserName { get; set; }
+        [Required]
+        [StringLength(7, ErrorMessage = "")]
+        [DataType(DataType.Text)]
+        [Display(Name = "双因素代码")]
+        public string TwoFactorCode { get; set; }
 
         /// <summary>
-        /// 密码
+        /// 记住机器
         /// </summary>
-        [Display(Name = "密码")]
-        [Required(ErrorMessage = "密码必填")]
-        public string Password { get; set; }
+        [Display(Name = "记住机器")]
+        public bool RememberMachine { get; set; }
 
         /// <summary>
         /// 记住账号
         /// </summary>
-        [Display(Name = "记住账号？")]
         public bool RememberMe { get; set; }
 
         /// <summary>
-        /// 返回 url
+        /// 返回 Url
         /// </summary>
         public string ReturnUrl { get; set; }
     }

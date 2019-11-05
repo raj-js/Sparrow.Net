@@ -1,0 +1,9 @@
+﻿@model RedirectViewModel
+
+<p>跳转中...</p>
+
+<meta http-equiv="refresh" content="0;url=@Model.RedirectUrl" data-url="@Model.RedirectUrl"/>
+
+<script type="text/javascript">
+    window.location.href = document.querySelector("meta[http-equiv=refresh]").getAttribute("data-url");
+</script>

@@ -1,0 +1,33 @@
+﻿@model LoginWith2faViewModel
+
+<div>
+    <partial name="_ValidationSummary" />
+
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+            <div class="card">
+                <div class="card-header">双因素登录</div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        <input type="hidden" asp-for="RememberMe" />
+
+                        <div class="form-group">
+                            <label asp-for="TwoFactorCode"></label>
+                            <input asp-for="TwoFactorCode" class="form-control" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" asp-for="RememberMachine" class="form-check-input" />
+                            <label asp-for="RememberMachine" class="form-check-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">登 录</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
