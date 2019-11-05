@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Sparrow.IdentityServer.Controllers
 {
-    [SecurityHeaders]
+    //[SecurityHeaders]
     [AllowAnonymous]
     public class AccountController : Controller
     {

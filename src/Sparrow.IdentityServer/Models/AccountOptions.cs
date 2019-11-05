@@ -32,10 +32,14 @@ namespace Sparrow.IdentityServer.Models
         /// </summary>
         public static bool AutomaticRedirectAfterSignOut = false;
 
-        // specify the Windows authentication scheme being used
+        /// <summary>
+        /// specify the Windows authentication scheme being used
+        /// </summary>
         public static readonly string WindowsAuthenticationSchemeName = Microsoft.AspNetCore.Server.IISIntegration.IISDefaults.AuthenticationScheme;
 
-        // if user uses windows auth, should we load the groups from windows
+        /// <summary>
+        /// if user uses windows auth, should we load the groups from windows
+        /// </summary>
         public static bool IncludeWindowsGroups = false;
 
         /// <summary>

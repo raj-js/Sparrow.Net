@@ -18,4 +18,9 @@
     <ProjectReference Include="..\Sparrow.IdentityServer.Core\Sparrow.IdentityServer.Core.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\vuetify\dist\fonts\" />
+  </ItemGroup>
+
 </Project>
