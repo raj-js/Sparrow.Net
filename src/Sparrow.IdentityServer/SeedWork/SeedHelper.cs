@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using IdentityServer4.EntityFramework.Entities;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sparrow.IdentityServer.Core.Data;
 using Sparrow.IdentityServer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -27,7 +30,7 @@ namespace Sparrow.IdentityServer.SeedWork
                 var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
                 var logger = provider.GetRequiredService<ILogger<Startup>>();
 
-                await AddSeedUsersAsync(configuration, userManager, logger);
+                await AddUsersAsync(configuration, userManager, logger);
             }
         }
 
@@ -54,7 +57,7 @@ namespace Sparrow.IdentityServer.SeedWork
         /// <param name="configuration"></param>
         /// <param name="userManager"></param>
         /// <returns></returns>
-        private static async Task AddSeedUsersAsync(
+        private static async Task AddUsersAsync(
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
             ILogger<Startup> logger
@@ -84,14 +87,24 @@ namespace Sparrow.IdentityServer.SeedWork
             }
         }
 
-        public static void AddApis()
+        private static void AddIdentityResource(SparrowConfigurationDbContext context) 
         {
+            var resources = Config.GetIdentityResources();
 
+            foreach (var resource in resources)
+            {
+                context.IdentityResources.Add();
+            }
         }
 
-        private static void AddClients()
+        private static void AddApiResources()
         {
+            
+        }
 
+        private static void AddClients(SparrowConfigurationDbContext context)
+        {
+            
         }
 
         private static string ErrorToString(this IdentityResult identityResult)

@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparrow.AspNetCore", "src\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparrow.IdentityServer.Core", "src\Sparrow.IdentityServer.Core\Sparrow.IdentityServer.Core.csproj", "{B76C9CA9-CFD7-4735-807E-163A89EE9D78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparrow.IdentityServer", "src\Sparrow.IdentityServer\Sparrow.IdentityServer.csproj", "{1A41B231-AA95-4CA0-93F3-D694C1CB8A31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparrow.IdentityServer", "src\Sparrow.IdentityServer\Sparrow.IdentityServer.csproj", "{1A41B231-AA95-4CA0-93F3-D694C1CB8A31}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{05CF6037-B838-4E3E-AB81-6609DA5F8938}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
