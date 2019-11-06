@@ -19,11 +19,16 @@ namespace Sparrow.IdentityServer.Core.Configurations
             Action<DbContextOptionsBuilder> actionIdentityOpt,
             Action<DbContextOptionsBuilder> actionConfigOpt,
             Action<DbContextOptionsBuilder> actionPersistedOpt
-            ) 
+            )
         {
             services.AddDbContext<SparrowIdentityDbContext>(actionIdentityOpt);
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(
+                    opt =>
+                    {
+                        opt.Password.RequireUppercase = false;
+                    }
+                )
                 .AddEntityFrameworkStores<SparrowIdentityDbContext>()
                 .AddDefaultTokenProviders();
 

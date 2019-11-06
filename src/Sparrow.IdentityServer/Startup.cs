@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Sparrow.IdentityServer.Core.Configurations;
 using System;
 
@@ -19,20 +20,23 @@ namespace Sparrow.IdentityServer
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging();
+
             var migrationAssembly = GetType().Assembly.FullName;
             var connectionString = Configuration.GetConnectionString("Default");
 
             Action<DbContextOptionsBuilder> dbOptBuilder =
-                builder => builder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationAssembly));
+                builder => 
+                    builder.UseSqlServer(connectionString, 
+                        sql => sql.MigrationsAssembly(migrationAssembly));
+
             services.AddSparrowIdentity(dbOptBuilder, dbOptBuilder, dbOptBuilder);
 
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
@@ -40,8 +44,7 @@ namespace Sparrow.IdentityServer
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -50,7 +53,6 @@ namespace Sparrow.IdentityServer
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

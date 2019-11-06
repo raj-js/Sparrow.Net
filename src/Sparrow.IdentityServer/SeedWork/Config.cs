@@ -1,4 +1,4 @@
-﻿namespace Sparrow.IdentityServer
+﻿namespace Sparrow.IdentityServer.SeedWork
 {
     public class Config
     {
