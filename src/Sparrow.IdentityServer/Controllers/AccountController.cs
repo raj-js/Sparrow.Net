@@ -1,4 +1,7 @@
-﻿using IdentityServer4.Events;
+﻿using IdentityModel;
+using IdentityServer4;
+using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
@@ -151,7 +154,7 @@ namespace Sparrow.IdentityServer.Controllers
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl) 
+        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl)
         {
             // 确认用户已经经过了用户名密码验证
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -159,7 +162,7 @@ namespace Sparrow.IdentityServer.Controllers
             if (user == null)
                 throw new InvalidOperationException("无效的 2fa 登陆操作");
 
-            var vm = new LoginWith2faViewModel 
+            var vm = new LoginWith2faViewModel
             {
                 RememberMe = rememberMe,
                 ReturnUrl = returnUrl
@@ -199,6 +202,52 @@ namespace Sparrow.IdentityServer.Controllers
 
             ModelState.AddModelError(string.Empty, "无效的认证码");
             return View(model);
+        }
+
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <param name="logoutId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            var vm = await BuildLogoutViewModelAsync(logoutId);
+
+            if (vm.ShowLogoutPrompt == false)
+                return await Logout(vm);
+
+            return View(vm);
+        }
+
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutFormModel model)
+        {
+            var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
+
+            if (User.Identity.IsAuthenticated == true)
+            {
+                await _signInManager.SignOutAsync();
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+            }
+
+            if (vm.TriggerExternalSignout)
+            {
+                var url = Url.Action("Logout", new { vm.LogoutId });
+                return SignOut(new AuthenticationProperties
+                {
+                    RedirectUri = url
+                }, vm.ExternalAuthenticationSchema);
+            }
+
+            return View("LoggedOut", vm);
         }
 
         #region privates
@@ -278,6 +327,73 @@ namespace Sparrow.IdentityServer.Controllers
             var vm = await BuildLoginViewModelAsync(model.ReturnUrl);
             vm.UserName = model.UserName;
             vm.RememberMe = model.RememberMe;
+            return vm;
+        }
+
+        /// <summary>
+        /// 构建登出视图模型
+        /// </summary>
+        /// <param name="logoutId"></param>
+        /// <returns></returns>
+        private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
+        {
+            var vm = new LogoutViewModel
+            {
+                LogoutId = logoutId,
+                ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt
+            };
+
+            if (User?.Identity.IsAuthenticated != true)
+            {
+                vm.ShowLogoutPrompt = false;
+                return vm;
+            }
+
+            var logoutRequest = await _interaction.GetLogoutContextAsync(logoutId);
+            if (logoutRequest?.ShowSignoutPrompt == false)
+            {
+                vm.ShowLogoutPrompt = false;
+                return vm;
+            }
+
+            return vm;
+        }
+
+        /// <summary>
+        /// 构建登出后的视图
+        /// </summary>
+        /// <param name="logoutId"></param>
+        /// <returns></returns>
+        public async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string logoutId)
+        {
+            var logoutRequest = await _interaction.GetLogoutContextAsync(logoutId);
+
+            var vm = new LoggedOutViewModel
+            {
+                AutomaticRedirectAfterSignOut = AccountOptions.AutomaticRedirectAfterSignOut,
+                PostLogoutRedirectUri = logoutRequest?.PostLogoutRedirectUri,
+                ClientName = logoutRequest?.ClientName ?? logoutRequest?.ClientId,
+                SignOutIFrameUrl = logoutRequest?.SignOutIFrameUrl,
+                LogoutId = logoutId
+            };
+
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
+
+                // 外部登录
+                if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
+                {
+                    var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
+                    if (providerSupportsSignout)
+                    {
+                        if (vm.LogoutId == null)
+                            vm.LogoutId = await _interaction.CreateLogoutContextAsync();
+                    }
+                    vm.ExternalAuthenticationSchema = idp;
+                }
+            }
+
             return vm;
         }
 

@@ -1,0 +1,29 @@
+﻿@model LoggedOutViewModel
+
+@{
+    ViewData["signed-out"] = true;
+}
+
+<div class="row">
+    <p>您已登出</p>
+
+    @if (Model.PostLogoutRedirectUri != null)
+    {
+        <div>
+            点击<a href="@Model.PostLogoutRedirectUri">链接</a>返回 <span>@Model.ClientName</span>
+        </div>
+    }
+
+    @if (Model.SignOutIFrameUrl != null)
+    {
+        <iframe width="0" height="0" src="@Model.SignOutIFrameUrl"></iframe>
+    }
+</div>
+
+@section scripts
+{
+    @if (Model.AutomaticRedirectAfterSignOut)
+    {
+        <script src="~/js/signout-redirect.js"></script>
+    }
+}
