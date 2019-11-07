@@ -1,5 +1,4 @@
-﻿using IdentityServer4.EntityFramework.Entities;
-using IdentityServer4.Stores;
+﻿using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Sparrow.IdentityServer.Core.Data;
 using Sparrow.IdentityServer.Core.Models;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,27 +28,19 @@ namespace Sparrow.IdentityServer.SeedWork
                 var configuration = provider.GetRequiredService<IConfiguration>();
                 var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
                 var logger = provider.GetRequiredService<ILogger<Startup>>();
+                var context = provider.GetRequiredService<SparrowConfigurationDbContext>();
 
                 await AddUsersAsync(configuration, userManager, logger);
+
+                await AddIdentityResourceAsync(context);
+
+                await AddApiResourcesAsync(context, configuration);
+
+                await AddClientsAsync(context, configuration);
             }
         }
 
         #region privates
-
-        /// <summary>
-        /// 加载种子用户
-        /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
-        private static List<SeedUser> LoadSeedUsers(IConfiguration configuration)
-        {
-            var usersSection = configuration.GetSection("SeedData:Users");
-
-            var seedUsers = new List<SeedUser>();
-            usersSection.Bind(seedUsers);
-
-            return seedUsers;
-        }
 
         /// <summary>
         /// 添加种子用户
@@ -63,48 +54,88 @@ namespace Sparrow.IdentityServer.SeedWork
             ILogger<Startup> logger
             )
         {
-            var seedUsers = LoadSeedUsers(configuration);
+            var users = Config.GetUsers(configuration);
 
-            foreach (var seedUser in seedUsers)
+            foreach (var seed in users)
             {
-                var user = await userManager.FindByIdAsync(seedUser.Id);
+                var user = await userManager.FindByIdAsync(seed.Id);
 
                 if (user != null)
                     continue;
 
                 var identityResult = await userManager.CreateAsync(new ApplicationUser
                 {
-                    Id = seedUser.Id,
-                    UserName = seedUser.UserName,
-                    Email = seedUser.Email,
+                    Id = seed.Id,
+                    UserName = seed.UserName,
+                    Email = seed.Email,
                     EmailConfirmed = true,
-                    PhoneNumber = seedUser.Phone,
+                    PhoneNumber = seed.Phone,
                     PhoneNumberConfirmed = true
-                }, seedUser.Password);
+                }, seed.Password);
 
                 if (identityResult.Succeeded == false)
                     logger.LogError($"新增 seed user 失败: {identityResult.ErrorToString()}");
             }
         }
 
-        private static void AddIdentityResource(SparrowConfigurationDbContext context) 
+        /// <summary>
+        /// 添加 Identity 资源
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private static async Task AddIdentityResourceAsync(SparrowConfigurationDbContext context) 
         {
             var resources = Config.GetIdentityResources();
 
             foreach (var resource in resources)
             {
-                context.IdentityResources.Add();
+                if (context.IdentityResources.Any(r => r.Name == resource.Name)) 
+                    continue;
+
+                context.IdentityResources.Add(resource.ToEntity());
             }
+
+            await context.SaveChangesAsync();
         }
 
-        private static void AddApiResources()
+        /// <summary>
+        /// 添加 Api 资源
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        private static async Task AddApiResourcesAsync(SparrowConfigurationDbContext context, IConfiguration configuration)
         {
-            
+            var apiResources = Config.GetApiResources(configuration);
+
+            foreach (var apiResource in apiResources)
+            {
+                if (context.ApiResources.Any(r => r.Name == apiResource.Name))
+                    continue;
+
+                context.ApiResources.Add(apiResource.ToEntity());
+            }
+
+            await context.SaveChangesAsync();
         }
 
-        private static void AddClients(SparrowConfigurationDbContext context)
+        /// <summary>
+        /// 添加客户端
+        /// </summary>
+        /// <param name="context"></param>
+        private static async Task AddClientsAsync(SparrowConfigurationDbContext context, IConfiguration configuration)
         {
-            
+            var clients = Config.GetClients(configuration);
+
+            foreach (var client in clients)
+            {
+                if (context.Clients.Any(r => r.ClientId == client.ClientId))
+                    continue;
+
+                context.Clients.Add(client.ToEntity());
+            }
+
+            await context.SaveChangesAsync();
         }
 
         private static string ErrorToString(this IdentityResult identityResult)
