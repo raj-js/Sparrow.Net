@@ -1,0 +1,86 @@
+﻿@model ConsentViewModel
+
+<div class="row">
+    <div class="col-sm-10 offset-sm-1">
+        @if (Model.ClientLogoUri != null)
+        {
+            <div class="client-logo">
+                <img src="@Model.ClientLogoUri" />
+            </div>
+        }
+        <h1>
+            @Model.ClientName
+            <small>正在请求您的授权</small>
+        </h1>
+    </div>
+</div>
+
+<div class="col-sm-10 offset-sm-1">
+
+    <partial name="_ValidationSummary" />
+
+    <form method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <div class="alert alert-info">
+            请对您取消勾选不想授予给客户端 <strong>@Model.ClientName</strong> 的权限
+        </div>
+
+        @if (Model.IdentityResourcesScopes.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    个人信息
+                </div>
+
+                <ul class="list-group">
+                    @foreach (var scope in Model.IdentityResourcesScopes)
+                    {
+                        <partial name="_ScopeListItem" model="scope" />
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (Model.ApiResourcesScopes.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    应用权限
+                </div>
+
+                <ul class="list-group">
+                    @foreach (var scope in Model.ApiResourcesScopes)
+                    {
+                        <partial name="_ScopeListItem" model="scope" />
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (Model.AllowRememberConsent)
+        {
+            <div class="consent-remember">
+                <label>
+                    <input class="consent-scopecheck" asp-for="RememberConsent" />
+                    <strong>记住授权？</strong>
+                </label>
+            </div>
+        }
+
+        <div class="consent-buttons">
+            <button name="Button" value="yes" class="btn btn-primary" autofocus>授 权</button>
+            <button name="Button" value="no" class="btn btn-dark" autofocus>拒 绝</button>
+
+            @if (Model.ClientUrl != null)
+            {
+                <a class="float-right btn btn-info" target="_blank" href="@Model.ClientUrl">
+                    <strong>@Model.ClientName</strong>
+                </a>
+            }
+
+        </div>
+
+    </form>
+
+</div>
