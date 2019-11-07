@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static IdentityModel.OidcConstants;
 
 namespace Sparrow.IdentityServer.SeedWork
 {
@@ -29,7 +30,7 @@ namespace Sparrow.IdentityServer.SeedWork
                 var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
                 var logger = provider.GetRequiredService<ILogger<Startup>>();
                 var context = provider.GetRequiredService<SparrowConfigurationDbContext>();
-
+                                       
                 await AddUsersAsync(configuration, userManager, logger);
 
                 await AddIdentityResourceAsync(context);

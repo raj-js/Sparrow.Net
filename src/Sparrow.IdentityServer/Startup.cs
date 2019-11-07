@@ -24,12 +24,21 @@ namespace Sparrow.IdentityServer
         {
             services.AddLogging();
 
+            services.AddCors(
+                opt => opt.AddPolicy("default",
+                    builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                    )
+                );
+
             var migrationAssembly = GetType().Assembly.FullName;
             var connectionString = Configuration.GetConnectionString("Default");
 
             Action<DbContextOptionsBuilder> dbOptBuilder =
-                builder => 
-                    builder.UseSqlServer(connectionString, 
+                builder =>
+                    builder.UseSqlServer(connectionString,
                         sql => sql.MigrationsAssembly(migrationAssembly));
 
             services.AddSparrowIdentity(dbOptBuilder, dbOptBuilder, dbOptBuilder);
@@ -55,6 +64,8 @@ namespace Sparrow.IdentityServer
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            app.UseCors("default");
 
             app.UseSparrowIdentity();
 
