@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sparrow.IdentityServer.Core.Data;
 
 namespace Sparrow.IdentityServer.Migrations.SparrowPersistedGrantDb
 {
     [DbContext(typeof(SparrowPersistedGrantDbContext))]
-    partial class SparrowPersistedGrantDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191105151134_CreateSchema")]
+    partial class CreateSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
