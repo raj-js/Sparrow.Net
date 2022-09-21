@@ -6,7 +6,7 @@
     "jquery": "^3.4.1",
     "vee-validate": "^3.0.11",
     "vue": "^2.6.10",
-    "vuetify": "^2.1.9"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@mdi/font": "^4.5.95",
